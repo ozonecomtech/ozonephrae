@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+	
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YDZMQ8DYV9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YDZMQ8DYV9');
+</script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โอโซนแพร่ คาเฟ่ & แคมป์ปิ้ง | Ozone Phrae</title>
+     <link rel="icon" type="image/x-icon" href="/favicon.png">
+    <!-- ฟอนต์ภาษาไทยจาก Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- ไอคอนจาก FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- นำเข้า Tailwind CSS สำหรับความสวยงาม -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'sans-serif'],
+                        heading: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        forest: {
+                            50: '#f2f7f4',
+                            100: '#e1efe5',
+                            500: '#3a7d44',
+                            700: '#2d5a27', // สีเขียวหลัก
+                            900: '#1a3a18',
+                        },
+                        earth: {
+                            100: '#fdf8f5', // สีพื้นหลังครีมอ่อนๆ
+                            500: '#8b5a2b',
+                            700: '#5c4033', // สีน้ำตาลไม้
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-nav {
+            background: rgba(253, 248, 245, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .hero-overlay {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+        }
+        /* Mobile Menu Animation */
+        #mobile-menu {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+        }
+        #mobile-menu.active {
+            max-height: 80vh;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="bg-earth-100 text-gray-800 font-sans antialiased selection:bg-forest-500 selection:text-white">
+
+    <!-- Navbar: ปรับปรุงให้ Fixed และมี Mobile Menu -->
+    <nav class="fixed w-full z-50 glass-nav border-b border-forest-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                    <i class="fa-solid fa-leaf text-forest-700 text-2xl"></i>
+                    <span class="font-heading font-bold text-2xl text-forest-900 tracking-wide uppercase">OZONE<span class="text-forest-500">PHRAE</span></span>
+                </div>
+                
+                <!-- Desktop Menu: ซ่อนในมือถือ (hidden md:flex) -->
+                <div class="hidden lg:flex space-x-6 lg:space-x-8 items-center text-[15px]">
+                    <a href="#about" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">เรื่องราวของเรา</a>
+                    <a href="#cafe" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">คาเฟ่</a>
+                    <a href="#menu" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">เมนูแนะนำ</a>
+                    <a href="#camping" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">ลานกางเต็นท์</a>
+                    <a href="#contact" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">ติดต่อเรา</a>
+                    <a href="ozone_blog.html" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">รู้จักเรามากขึ้น</a>
+                    <a href="ozone_events.html" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">กิจกรรม</a>
+                    <a href="ozone_menu.html" class="bg-forest-700 text-white px-5 py-2 rounded-full hover:bg-forest-900 transition-colors shadow-md">สั่งอาหาร</a>
+                    <a href="ozone_booking.html" class="bg-forest-700 text-white px-5 py-2 rounded-full hover:bg-forest-900 transition-colors shadow-md">จองที่พัก</a>
+                </div>
+
+                <!-- Mobile menu button: แสดงเฉพาะมือถือ (md:hidden) -->
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-forest-700 focus:outline-none p-2 rounded-lg transition-all active:scale-90">
+                        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Container: ส่วนที่เด้งลงมา -->
+        <div id="mobile-menu" class="lg:hidden bg-white/95 backdrop-blur-md border-b border-forest-100 shadow-xl overflow-hidden hidden">
+            <div class="px-4 pt-2 pb-8 space-y-1">
+                <a href="#about" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">เรื่องราวของเรา</a>
+                <a href="#cafe" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">คาเฟ่</a>
+                <a href="#menu" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">เมนูแนะนำ</a>
+                <a href="#camping" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">ลานกางเต็นท์</a>
+                <a href="#contact" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">ติดต่อเรา</a>
+                <a href="ozone_blog.html" class="block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">รู้จักเรามากขึ้น</a>
+                <a href="ozone_events.html" class="block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">กิจกรรม</a>
+                <div class="grid grid-cols-2 gap-3 pt-4 border-t border-gray-100 mt-2">
+                    <a href="ozone_menu.html" class="bg-forest-700 text-white text-center py-3 rounded-xl font-bold shadow-md active:bg-forest-900 transition-colors">สั่งอาหาร</a>
+                    <a href="ozone_booking.html" class="bg-forest-700 text-white text-center py-3 rounded-xl font-bold shadow-md active:bg-forest-900 transition-colors">จองที่พัก</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 🏔️ ส่วนที่ 1: ส่วนหัวของเว็บไซต์ (Hero Banner) -->
+    <section class="relative h-screen flex items-center justify-center">
+        <div class="absolute inset-0 z-0">
+            <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_7622.JPG?w=3840&h=2160&auto=format%2Ccompress%2Cenhance%2Credeye" alt="" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 hero-overlay"></div>
+        </div>
+        
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto mt-16">
+            <h1 class="text-5xl md:text-7xl font-heading font-bold text-white mb-6 drop-shadow-lg leading-tight">
+                โอโซนแพร่<br><span class="text-3xl md:text-5xl text-forest-100 font-light mt-2 block tracking-wide">คาเฟ่ & แคมป์ปิ้ง</span>
+            </h1>
+            <p class="text-xl md:text-3xl text-gray-200 mb-6 font-light tracking-wide">
+                สูดอากาศให้เต็มปอด สัมผัสธรรมชาติให้เต็มหัวใจ
+            </p>
+            <p class="text-lg md:text-xl text-white/90 mb-10 font-medium bg-black/20 backdrop-blur-md inline-block px-6 py-2 rounded-full border border-white/10">
+                เปิดให้บริการ วันศุกร์-เสาร์-อาทิตย์ และวันหยุดนักขัตฤกษ์ (9.00-19.00 น.)
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#contact" class="bg-forest-500 hover:bg-forest-700 text-white font-medium text-lg px-8 py-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    <i class="fa-brands fa-line mr-2"></i> ติดต่อจองที่พัก
+                </a>
+                <a href="#about" class="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/50 font-medium text-lg px-8 py-4 rounded-full transition-all duration-300">
+                    ดูรายละเอียด
+                </a>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce z-10">
+            <a href="#about" class="text-white/70 hover:text-white">
+                <i class="fa-solid fa-chevron-down text-3xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- 🌳 ส่วนที่ 2: แนะนำสถานที่ (About Us) -->
+    <section id="about" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div class="order-2 md:order-1 relative">
+                    <div class="grid grid-cols-2 gap-4">
+                        <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/gardener-organic-green-lettuce.jpg?w=500&h=500&ar=1%3A1&fit=crop&auto=format" alt="" class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                        <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/adult-harvesting-coffee.jpg?w=500&h=500&ar=1%3A1&fit=crop&auto=format" alt="" class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                        <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/agriculture-lychee-fruit-thailand%20(1).jpg?w=500&h=500&ar=1%3A1&fit=crop&auto=format" alt="" class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                        <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/carp-fish-water-closeup-photo-freshwater-fish-water.jpg?w=500&h=500&ar=1%3A1&fit=crop&auto=format" alt="" class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                    </div>
+                    <div class="absolute -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-forest-50 rounded-full blur-3xl opacity-50"></div>
+                </div>
+                <div class="order-1 md:order-2">
+                    <div class="inline-block bg-forest-100 text-forest-700 px-4 py-1 rounded-full text-sm font-semibold mb-4">เรื่องราวของเรา</div>
+                    <h2 class="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-6 leading-tight">สัมผัสวิถีธรรมชาติ<br><span class="text-forest-700">การเกษตรแบบผสมผสาน</span></h2>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        สถานที่ท่องเที่ยวเชิงเกษตรในจังหวัดแพร่ ที่ผสมผสานระหว่าง สวนผลไม้ ร้านอาหาร คาเฟ่ และจุดกางเต็นท์ ที่โอบล้อมด้วยวิวภูเขาอันสวยงาม มีอากาศบริสุทธิ์ตลอดทั้งปี  สถานที่พักผ่อนแห่งนี้อยู่ท่ามกลางร่มไม้ใหญ่ มีความเป็นส่วนตัวเงียบสงบ อีกทั้งยังเป็นศูนย์เรียนรู้ด้านการเกษตร
+                         ภายในสวนของเราปลูกผลไม้หลากหลายชนิด เช่น ลิ้นจี่ มะม่วง เงาะ กาแฟ โกโก้ ทุเรียน การประมงน้ำจืด และเรายังใช้วัตถุดิบผักผลไม้ออร์แกนิค จากสวนมาสร้างสรรค์เมนู เช่นกาแฟน้ำผึ้งป่าและกาแฟผลไม้ตามฤดูกาล เพื่อมุ่งเน้นให้ผู้มาเยือนได้พักผ่อนและใกล้ชิดกับธรรมชาติอย่างแท้จริง 
+ 
+                    </p>
+                    <div class="flex items-center gap-4 text-forest-700 font-medium">
+                        <div class="w-12 h-12 rounded-full bg-forest-100 flex items-center justify-center">
+                            <i class="fa-solid fa-seedling text-xl"></i>
+                        </div>
+                        <span>สดชื่น ปลอดภัย ไร้สารเคมี</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ☕ ส่วนที่ 3: โซนคาเฟ่ (Cafe) - อัปเดตเพิ่มรูปภาพ -->
+    <section id="cafe" class="py-24 bg-earth-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-block bg-earth-500/10 text-earth-700 px-4 py-1 rounded-full text-sm font-semibold mb-4">คาเฟ่ & ร้านอาหาร</div>
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-6">คาเฟ่และร้านอาหารในสวน</h2>
+                <p class="text-lg text-gray-600">
+                    บริการทั้งอาหาร เครื่องดื่ม และกาแฟสด ที่ใช้วัตถุดิบสดใหม่จากสวนของเราเอง รับรองว่าอร่อย สะอาด และดีต่อสุขภาพ พร้อมเสิร์ฟให้คุณได้นั่งทานท่ามกลางความเขียวขจี
+                </p>
+            </div>
+
+            <!-- แกลเลอรีรูปภาพคาเฟ่ (เพิ่มจำนวนรูป) -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
+                <!-- แถวบน: รูปใหญ่ + รูปเล็ก -->
+                <div class="md:col-span-2 group relative overflow-hidden rounded-2xl shadow-md h-64 md:h-[400px]">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_6675.JPG?w=1200&h=675&auto=format%2Cenhance%2Ccompress%2Credeye&fit=crop" alt="บรรยากาศคาเฟ่" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                        <h3 class="text-white text-xl font-heading font-semibold">มุมนั่งชิลล์ในร้าน</h3>
+                    </div>
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-64 md:h-[400px]">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_19145.jpg?w=1200&h=1263&auto=format%2Cenhance%2Ccompress%2Credeye" alt="กาแฟลาเต้อาร์ต" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                        <h3 class="text-white text-xl font-heading font-semibold">กาแฟคั่วหอมกรุ่น</h3>
+                    </div>
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-64 md:h-[400px]">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/CAFEOZOBE1.jpg?w=1200&h=741&auto=format%2Cenhance%2Ccompress%2Credeye" alt="มุมถ่ายรูป" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                        <h3 class="text-white text-xl font-heading font-semibold">มีมุมนั่งหลายโซน</h3>
+                    </div>
+                </div>
+
+                <!-- แถวล่าง: รูปเล็ก 4 รูป -->
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-48 md:h-64">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_4566-2.jpg?w=1200&h=900&auto=format%2Cenhance%2Ccompress%2Credeye" alt="กาแฟดริป" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-48 md:h-64">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/Lazanmago%20100E.jpg?w=1200&h=683&auto=format%2Cenhance%2Ccompress%2Credeye" alt="เครื่องดื่มโซดา" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-48 md:h-64">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_1031-2.jpg?w=969&h=645&auto=format%2Cenhance%2Ccompress%2Credeye" alt="เค้ก" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-48 md:h-64">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/PizzaHomemade_ozonephrae-2.jpg?w=1200&h=821&auto=format%2Cenhance%2Ccompress%2Credeye" alt="อาหารคลีน" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🍽️ ส่วนที่ 3.5: เมนูแนะนำ (Menu) -->
+    <section id="menu" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-block bg-earth-500/10 text-earth-700 px-4 py-1 rounded-full text-sm font-semibold mb-4">เมนูแนะนำ</div>
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-6">ความอร่อยจาก<span class="text-forest-700">ธรรมชาติ</span></h2>
+                <p class="text-lg text-gray-600">
+                    คัดสรรวัตถุดิบคุณภาพ ทั้งเมล็ดกาแฟที่คั่วอย่างพิถีพิถัน และเมนูอาหารที่เหมาะกับบรรยากาศแคมป์ปิ้ง
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 max-w-6xl mx-auto">
+                <!-- หมวดหมู่: เครื่องดื่ม -->
+                <div class="bg-forest-50/50 p-6 md:p-8 rounded-3xl border border-forest-100">
+                    <h3 class="text-2xl font-heading font-bold text-forest-800 border-b-2 border-forest-200 pb-4 mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-mug-hot text-forest-500"></i> เครื่องดื่ม (Beverages)
+                    </h3>
+                    <ul class="space-y-6">
+                        <li class="flex items-center gap-4 border-b border-gray-200 pb-4 border-dashed">
+                            <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_19145.jpg?w=1200&h=1263&auto=format%2Cenhance%2Ccompress%2Credeye" alt="โอโซน ซิกเนเจอร์" class="w-20 h-20 rounded-xl object-cover shadow-sm flex-shrink-0 border border-gray-100">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-medium text-gray-900 text-lg leading-tight">โอโซน ซิกเนเจอร์</h4>
+                                    <span class="font-bold text-forest-700 text-lg whitespace-nowrap ml-2">85.-</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">Ozone Signature</p>
+                                <p class="text-sm text-gray-600 line-clamp-2">กาแฟสกัดเย็น ผสมความหอมหวานของน้ำผึ้งป่าและมะนาว</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-4 border-b border-gray-200 pb-4 border-dashed">
+                            <img src="https://images.unsplash.com/photo-1551030173-122aabc4489c?auto=format&fit=crop&w=200&q=80" alt="อเมริกาโน่" class="w-20 h-20 rounded-xl object-cover shadow-sm flex-shrink-0 border border-gray-100">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-medium text-gray-900 text-lg leading-tight">อเมริกาโน่</h4>
+                                    <span class="font-bold text-forest-700 text-lg whitespace-nowrap ml-2">60.-</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">Americano</p>
+                                <p class="text-sm text-gray-600 line-clamp-2">เมล็ดอาราบิก้าคั่วกลาง หอมละมุน</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-4 border-b border-gray-200 pb-4 border-dashed">
+                            <img src="https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=200&q=80" alt="ลิ้นจี่โซดา" class="w-20 h-20 rounded-xl object-cover shadow-sm flex-shrink-0 border border-gray-100">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-medium text-gray-900 text-lg leading-tight">ลิ้นจี่โซดา</h4>
+                                    <span class="font-bold text-forest-700 text-lg whitespace-nowrap ml-2">70.-</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">Lychee Soda</p>
+                                <p class="text-sm text-gray-600 line-clamp-2">สดชื่นด้วยน้ำลิ้นจี่แท้จากสวนของเรา ซ่าโดนใจ</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-4 border-b border-gray-200 pb-4 border-dashed">
+                            <img src="https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=200&q=80" alt="มัทฉะลาเต้" class="w-20 h-20 rounded-xl object-cover shadow-sm flex-shrink-0 border border-gray-100">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-medium text-gray-900 text-lg leading-tight">มัทฉะลาเต้</h4>
+                                    <span class="font-bold text-forest-700 text-lg whitespace-nowrap ml-2">80.-</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">Matcha Latte</p>
+                                <p class="text-sm text-gray-600 line-clamp-2">ชาเขียวมัทฉะแท้ นำเข้าจากญี่ปุ่น</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- หมวดหมู่: อาหาร -->
+                <div class="bg-earth-100/50 p-6 md:p-8 rounded-3xl border border-earth-100">
+                    <h3 class="text-2xl font-heading font-bold text-earth-800 border-b-2 border-earth-200 pb-4 mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-fire-burner text-earth-500"></i> อาหาร (Food & Camping)
+                    </h3>
+                    <ul class="space-y-6">
+                        <li class="flex items-center gap-4 border-b border-gray-200 pb-4 border-dashed">
+                            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=200&q=80" alt="ชุดหมูกระทะโอโซน" class="w-20 h-20 rounded-xl object-cover shadow-sm flex-shrink-0 border border-gray-100">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-medium text-gray-900 text-lg leading-tight">ชุดหมูกระทะโอโซน</h4>
+                                    <span class="font-bold text-earth-700 text-lg whitespace-nowrap ml-2">399.-</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">Ozone BBQ Pork Set</p>
+                                <p class="text-sm text-gray-600 line-clamp-2">ชุดจัดเต็ม เสิร์ฟพร้อมผักออร์แกนิค (สำหรับ 2-3 ท่าน)</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-4 border-b border-gray-200 pb-4 border-dashed">
+                            <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/kapuwkai.jpg?w=1000&h=646&auto=format%2Ccompress%2Cenhance%2Credeye&fit=crop" alt="ข้าวไข่ข้นกะเพราหมูสับ" class="w-20 h-20 rounded-xl object-cover shadow-sm flex-shrink-0 border border-gray-100">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-medium text-gray-900 text-lg leading-tight">ข้าวไข่ข้นกะเพราหมูสับ</h4>
+                                    <span class="font-bold text-earth-700 text-lg whitespace-nowrap ml-2">89.-</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">Creamy Omelet with Basil Pork</p>
+                                <p class="text-sm text-gray-600 line-clamp-2">เมนูยอดฮิต รสชาติจัดจ้านถึงเครื่อง</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-4 border-b border-gray-200 pb-4 border-dashed">
+                            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=200&q=80" alt="สลัดผักออร์แกนิค" class="w-20 h-20 rounded-xl object-cover shadow-sm flex-shrink-0 border border-gray-100">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-medium text-gray-900 text-lg leading-tight">สลัดผักออร์แกนิค</h4>
+                                    <span class="font-bold text-earth-700 text-lg whitespace-nowrap ml-2">120.-</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">Organic Salad</p>
+                                <p class="text-sm text-gray-600 line-clamp-2">ผักสดๆ จากแปลงปลูกของเรา ทานคู่กับน้ำสลัดงาคั่ว</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center gap-4 border-b border-gray-200 pb-4 border-dashed">
+                            <img src="https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=200&q=80" alt="เฟรนช์ฟรายส์ทอด" class="w-20 h-20 rounded-xl object-cover shadow-sm flex-shrink-0 border border-gray-100">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="font-medium text-gray-900 text-lg leading-tight">เฟรนช์ฟรายส์ / นักเก็ต</h4>
+                                    <span class="font-bold text-earth-700 text-lg whitespace-nowrap ml-2">79.-</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mb-1">French Fries / Nuggets</p>
+                                <p class="text-sm text-gray-600 line-clamp-2">ของทานเล่นกรุบกรอบ ทานคู่เครื่องดื่ม</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <p class="text-gray-500 text-sm italic">* ราคาและเมนูอาจมีการเปลี่ยนแปลงตามฤดูกาล</p>
+                
+            </div>
+        </div>
+    </section>
+
+
+     <!-- ⛺ ส่วนที่ 4: โซนลานกางเต็นท์ (Camping Ground) - อัปเดต Carousel -->
+    <section id="camping" class="py-24 bg-forest-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <div class="inline-block bg-forest-700 text-forest-100 px-4 py-1 rounded-full text-sm font-semibold mb-4 border border-forest-500">จุดพักแรม</div>
+                    <h2 class="text-3xl md:text-4xl font-heading font-bold mb-6">ลานกางเต็นท์<br><span class="text-forest-400">สายธรรมชาติ</span></h2>
+                    <p class="text-lg text-forest-100 mb-8 leading-relaxed">
+                        ลานกางเต็นท์ท่ามกลางสวนผลไม้ ร่มรื่น เงียบสงบ พร้อมวิวภูเขาและแสงดาวยามค่ำคืน การเดินทางสะดวกสบาย ถนนลาดยาง รถเก๋งเข้าถึงได้สบาย และอยู่ติดกับ "น้ำตกห้วยโรง" สามารถเดินลงไปเล่นน้ำได้
+                    </p>
+                    
+                    <!-- สิ่งอำนวยความสะดวก -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-plug text-forest-100"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">จุดพ่วงไฟ</h4>
+                                <p class="text-forest-200 text-sm">มีปลั๊กไฟให้ต่อพ่วงใช้งานไฟฟ้าได้</p>
+                            </div>
+                        </div>
+                         <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-shower text-forest-100"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">ห้องน้ำสะอาด</h4>
+                                <p class="text-forest-200 text-sm">มีห้องน้ำห้องอาบน้ำกระจายทุกโซน</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-shower text-forest-100"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">เครื่องทำน้ำอุ่น</h4>
+                                <p class="text-forest-200 text-sm">ห้องอาบน้ำมีเครื่องทำน้ำอุ่น</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-wifi text-forest-100"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">อินเทอร์เน็ต</h4>
+                                <p class="text-forest-200 text-sm">มีสัญญาณโทรศัพท์ 4G ทุกค่าย</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-sink text-forest-100"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">จุดทำความสะอาด</h4>
+                                <p class="text-forest-200 text-sm">มีจุดล้างจานและจุดทิ้งขยะ</p>
+                            </div>
+                        </div>
+                           <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-paw text-forest-100"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">Pet Friendly</h4>
+                                <p class="text-forest-200 text-sm">พาน้องหมาน้องแมวเข้าได้</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-shield-halved text-forest-100"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">ปลอดภัย</h4>
+                                <p class="text-forest-200 text-sm">มีคนดูแลและไฟส่องสว่างตลอดคืน</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-forest-700 flex items-center justify-center flex-shrink-0 mt-1">
+                                <i class="fa-solid fa-car text-forest-100"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">มีที่จอดรถกว้าง</h4>
+                                <p class="text-forest-200 text-sm">ที่จอดรถอยู่ไกล้ลานกางเต็นท์</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ส่วนของ Image Carousel -->
+                <div class="relative">
+                    <!-- Carousel Container ที่ซ่อนส่วนเกิน (overflow-hidden) -->
+                    <div class="relative rounded-2xl shadow-2xl w-full h-[500px] border-4 border-forest-800 overflow-hidden group" id="camping-carousel">
+                        <!-- แถบเลื่อนภาพ (Track) -->
+                        <div class="flex w-full h-full transition-transform duration-500 ease-in-out" id="carousel-track">
+                            <!-- ภาพที่ 1: กลางคืน -->
+                            <div class="min-w-full h-full relative">
+                                <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/AVUZ4569SS.png?w=1200&h=675&auto=format%2Cenhance%2Ccompress%2Credeye" alt="ลานกางเต็นท์ตอนกลางคืน" class="w-full h-full object-cover">
+                            </div>
+                            <!-- ภาพที่ 2: กลางวัน -->
+                            <div class="min-w-full h-full relative">
+                                <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_6540SS.JPG?w=1200&h=675&auto=enhance%2Cformat%2Ccompress%2Credeye" alt="บรรยากาศกางเต็นท์ตอนกลางวัน" class="w-full h-full object-cover">
+                            </div>
+                            <!-- ภาพที่ 3: ทะเลหมอกธรรมชาติ -->
+                            <div class="min-w-full h-full relative">
+                                <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/DLDG7180%20SS.PNG?w=1200&h=675&auto=format%2Cenhance%2Ccompress%2Credeye" alt="ทะเลหมอกยามเช้า" class="w-full h-full object-cover">
+                            </div>
+                              <!-- ภาพที่ 4: ทะเลหมอกธรรมชาติ -->
+                            <div class="min-w-full h-full relative">
+                                <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_6715.JPG?w=1920&h=1080&auto=format%2Ccompress%2Cenhance%2Credeye" alt="ทะเลหมอกยามเช้า" class="w-full h-full object-cover">
+                            </div>
+                            <!-- ภาพที่ 5: ทะเลหมอกธรรมชาติ -->
+                            <div class="min-w-full h-full relative">
+                                <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_7622.JPG?w=3840&h=2160" alt="ทะเลหมอกยามเช้า" class="w-full h-full object-cover">
+                            </div>
+                               <!-- ภาพที่ 6: ทะเลหมอกธรรมชาติ -->
+                            <div class="min-w-full h-full relative">
+                                <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_6753.JPG?w=1920&h=1080&auto=format%2Cenhance%2Ccompress%2Credeye" alt="ทะเลหมอกยามเช้า" class="w-full h-full object-cover">
+                            </div>
+
+                        </div>
+
+                        <!-- ปุ่มกดเลื่อน ซ้าย/ขวา -->
+                        <button id="prev-slide" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/50 hover:bg-white text-forest-900 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm shadow-md cursor-pointer z-10">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button id="next-slide" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/50 hover:bg-white text-forest-900 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm shadow-md cursor-pointer z-10">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+
+                        <!-- จุดบอกตำแหน่งสไลด์ (Indicators) -->
+                        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+                            <button class="carousel-dot w-6 h-2.5 rounded-full bg-white transition-all duration-300 cursor-pointer"></button>
+                            <button class="carousel-dot w-2.5 h-2.5 rounded-full bg-white/50 transition-all duration-300 cursor-pointer"></button>
+                            <button class="carousel-dot w-2.5 h-2.5 rounded-full bg-white/50 transition-all duration-300 cursor-pointer"></button>
+                        </div>
+                    </div>
+
+                    <!-- ป้ายแสดงอุณหภูมิ (วางทับด้านนอกกรอบ Carousel) -->
+                    <div class="absolute -bottom-6 -left-6 bg-white text-forest-900 p-6 rounded-xl shadow-xl z-20 pointer-events-none">
+                        <p class="font-heading font-bold text-3xl">18-22°C</p>
+                        <p class="text-sm font-medium">อากาศเย็นสบายตลอดคืน</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- อัตราค่าบริการและกฎระเบียบ -->
+            <div class="mt-24 grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-forest-800 pt-16">
+                <!-- อัตราค่าบริการ -->
+                <div class="bg-forest-800/50 p-8 rounded-3xl border border-forest-700">
+                    <h3 class="text-2xl font-heading font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-tags text-forest-400"></i> อัตราค่าบริการ
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-forest-900/50 p-4 rounded-xl flex justify-between items-center border border-forest-700/50">
+                            <div>
+                                <h4 class="font-medium text-lg text-forest-50">นำเต็นท์มาเอง</h4>
+                                <p class="text-sm text-forest-300">ผู้ใหญ่ 150฿ เด็ก 100฿ อายุน้อยกว่า 5ปี ฟรี </p>
+                            </div>
+                            <span class="text-xl font-bold text-forest-400">100-150.- <span class="text-sm font-normal text-forest-300">/ ท่าน</span></span>
+                        </div>
+                        <div class="bg-forest-900/50 p-4 rounded-xl flex justify-between items-center border border-forest-700/50">
+                            <div>
+                                <h4 class="font-medium text-lg text-forest-50">เช่าเต็นท์ (Small)</h4>
+                                <p class="text-sm text-forest-300">สำหรับ 2 ท่าน พร้อมชุดเครื่องนอน</p>
+                            </div>
+                            <span class="text-xl font-bold text-forest-400">500.- <span class="text-sm font-normal text-forest-300">/ คืน</span></span>
+                        </div>
+                        <div class="bg-forest-900/50 p-4 rounded-xl flex justify-between items-center border border-forest-700/50">
+                            <div>
+                                <h4 class="font-medium text-lg text-forest-50">เช่าเต็นท์ (Family)</h4>
+                                <p class="text-sm text-forest-300">สำหรับ 4 ท่าน พร้อมสิ่งอำนวยความสะดวก</p>
+                            </div>
+                            <span class="text-xl font-bold text-forest-400">980.- <span class="text-sm font-normal text-forest-300">/ คืน</span></span>
+                        </div>
+                          <div class="bg-forest-900/50 p-4 rounded-xl flex justify-between items-center border border-forest-700/50">
+                            <div>
+                                <h4 class="font-medium text-lg text-forest-50">เช่าบ้านพักโฮมสเตย์ (Homestay) </h4>
+                                <p class="text-sm text-forest-300">มีบ้านพักหลังใหญ่ สำหรับครอบครัวหรือหมู่คณะรองรับ 5-15 คน</p>
+                            </div>
+                            <span class="text-xl font-bold text-forest-400">3500.- <span class="text-sm font-normal text-forest-300">/ คืน</span></span>
+                        </div>
+                         <div class="bg-forest-900/50 p-4 rounded-xl flex justify-between items-center border border-forest-700/50">
+                            <div>
+                                <h4 class="font-medium text-lg text-forest-50">มีโซนคาร์แคมป์ (Car Camping) </h4>
+                                <p class="text-sm text-forest-300">รถจอดนอนนอกสนามฟรี จอดในสนามคันละ 150+คนละ 150฿</p>
+                            </div>
+                            <span class="text-xl font-bold text-forest-400">150.- <span class="text-sm font-normal text-forest-300">/ คัน</span></span>
+                        </div>
+                        
+                        <p class="text-xs text-forest-400 mt-4 italic">* เด็กอายุต่ำกว่า 5 ปี เข้าพักฟรี</p>
+                    </div>
+                </div>
+
+                <!-- กฎระเบียบ -->
+                <div>
+                    <h3 class="text-2xl font-heading font-bold text-white mb-6 flex items-center gap-3">
+                        <i class="fa-solid fa-clipboard-list text-forest-400"></i> กฎระเบียบการเข้าพัก
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-volume-xmark text-forest-400 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-forest-50">งดใช้เสียงดังหลัง 22:00 น.</p>
+                                <p class="text-sm text-forest-300">เพื่อให้ทุกคนได้พักผ่อนท่ามกลางความสงบ</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-guitar text-forest-400 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-forest-50">งดใช้เครื่องเสียงตัวใหญ่และร้องคาราโอเกะ</p>
+                                <p class="text-sm text-forest-300">อนุญาตให้เล่นกีตาร์โปร่งเบาๆได้ หรือเปิดได้ในวันที่ลูกค้าเฉพาะกลุ่ม</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-dog text-forest-400 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-forest-50">สัตว์เลี้ยงเข้าพักได้</p>
+                                <p class="text-sm text-forest-300">ต้องมีสายจูง และดูแลความสะอาดการขับถ่าย</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-trash-can text-forest-400 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-forest-50">ช่วยกันรักษาความสะอาด</p>
+                                <p class="text-sm text-forest-300">ทิ้งขยะในจุดที่จัดเตรียมไว้ให้ แยกขยะเปียกและขยะรีไซเคิล</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-fire-burner text-forest-400 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-forest-50">สามารถประกอบอาหารเองได้</p>
+                                <p class="text-sm text-forest-300">แต่ต้องไม่ทำให้สนามหญ้าหรือสถานที่เสียหาย</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-explosion text-forest-400 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-forest-50">ไม่อนุญาตใช้อุปกรณ์ไฟฟ้าที่มีกำลังไฟสูง</p>
+                                <p class="text-sm text-forest-300">เช่นเตาย่างไฟฟ้า | กระทะไฟฟ้า</p>
+                            </div>
+                        </li>
+                         <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-children text-forest-400 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-forest-50">ห้ามสูบบุหรี่ในที่ที่มีเด็กและสตรี</p>
+                                <p class="text-sm text-forest-300">เรามีโซนหรือพื้นที่สำหรับสูบบุหรี่</p>
+                            </div>
+                        </li>
+                         <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-clock text-forest-400 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-forest-50">เวลาเปิด-ปิด</p>
+                                <p class="text-sm text-forest-300">Check-in: หลังเวลา 12:00 น. | Check-out: ก่อนเวลา 12:00 น.</p>
+                            </div>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+<!-- ☕ ส่วนที่ 4: ลานกางเต็นท์ อัปเดตเพิ่มรูปภาพ -->
+    <section id="cafe" class="py-24 bg-earth-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-block bg-earth-500/10 text-earth-700 px-4 py-1 rounded-full text-sm font-semibold mb-4">ลานกางเต็นท์ & บ้านพักโฮมสเตย์</div>
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-6">ลานกางเต็นท์ที่<span class="text-forest-700">เห็นวิวภูเขา 360 องศา</span></h2>
+                </h2>
+                <p class="text-lg text-gray-600">
+                    ในส่วนของลานกางเต็นท์  พื้นที่มีความอุดมสมบูรณ์ด้วยต้นไม้และสนามหญ้าเขียวขจี มีวิวภูเขาที่สวยงาม อากาศบริสุทธิ์ ลมเย็นสบาย มีลานที่กว้างรองรับนักท่องเที่ยวได้จำนวนมาก มีพื้นที่ลานหลายโซนให้ได้เห็นวิวและบรรยากาศที่แตกต่างกัน ถึงแม้เราจะเป็นสถานที่ห่างไกล แต่ก็ไม่ได้ลำบากมากเพราะที่นี่มีสัญญาณมือถือครบทุกค่าย มีไฟฟ้าให้ใช้ มีคาเฟ่ให้บริการอาหาร เครื่องดึ่ม กาแฟสด น้ำแข็ง ของใช้ที่จำเป็น 
+                    การเดินทางสะดวกเป็นถนนลาดยาง อยู่ห่างจากถนนสายหลัก แพร่-น่าน เพียง 4 กิโลเมตร ทางขึ้นไม่ได้สูงชันมาก รถขนาดเล็กก็สามารถขึ้นมาได้ 
+
+            </div>
+
+            <!-- แกลเลอรีรูปภาพคาเฟ่ (เพิ่มจำนวนรูป) -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
+                <!-- แถวบน: รูปใหญ่ + รูปเล็ก -->
+                <div class="md:col-span-2 group relative overflow-hidden rounded-2xl shadow-md h-64 md:h-[400px]">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_9095ss.jpg?w=1200&h=486&auto=format%2Ccompress%2Cenhance%2Credeye&fit=crop" alt="บรรยากาศคาเฟ่" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                        <h3 class="text-white text-xl font-heading font-semibold">มุมนั่งชิลล์ในร้าน</h3>
+                    </div>
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-64 md:h-[400px]">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_E8939-2.jpg?w=1200&h=675&auto=format%2Ccompress%2Cenhance%2Credeye" alt="กาแฟลาเต้อาร์ต" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                        <h3 class="text-white text-xl font-heading font-semibold">กาแฟคั่วหอมกรุ่น</h3>
+                    </div>
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-64 md:h-[400px]">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_E8317.JPG?w=1000&h=2257&auto=format%2Cenhance%2Ccompress%2Credeye&rect=0%2C0%2C3838%2C2257" alt="มุมถ่ายรูป" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                        <h3 class="text-white text-xl font-heading font-semibold">มีมุมนั่งหลายโซน</h3>
+                    </div>
+                </div>
+
+                <!-- แถวล่าง: รูปเล็ก 4 รูป -->
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-48 md:h-64">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/DLDG7180.PNG?w=1200&h=675&auto=format%2Ccompress%2Cenhance%2Credeye&fit=crop" alt="กาแฟดริป" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-48 md:h-64">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/ZFP_2843-2.jpg?w=1000&h=667&ar=2048%3A1365&auto=format%2Ccompress%2Cenhance%2Credeye&fit=crop" alt="เครื่องดื่มโซดา" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-48 md:h-64">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/ASWI1606.jpg?w=1000&h=563&auto=format%2Cenhance%2Ccompress%2Credeye&fit=crop" alt="เค้ก" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="md:col-span-1 group relative overflow-hidden rounded-2xl shadow-md h-48 md:h-64">
+                    <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/EOSK1001.jpg?w=1200&h=900&auto=format%2Ccompress%2Cenhance%2Credeye&fit=crop" alt="อาหารคลีน" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+      <!-- 🌳 ส่วนที่ 4.4: สถานที่ไกล้เคียง (About Us) -->
+    <section id="about" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                <div class="order-2 md:order-1 relative">
+                    <div class="grid grid-cols-2 gap-4">
+                        <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/namtokhu-2.jpg?w=1524&h=973&auto=compress%2Cformat%2Cenhance%2Credeye" alt="" class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                        <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/makumme-2.jpg?w=1477&h=1107&auto=format%2Cenhance%2Ccompress%2Credeye" alt="" class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                        <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_5560-2.jpg?w=1200&h=675&auto=format%2Cenhance%2Ccompress%2Credeye" alt="" class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                        <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_9547-2.jpg?w=1064&h=745&auto=format%2Cenhance%2Ccompress%2Credeye" alt="" class="rounded-2xl shadow-lg w-full h-64 object-cover">
+                   
+                    </div>
+                    <div class="absolute -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-forest-50 rounded-full blur-3xl opacity-50"></div>
+                </div>
+                <div class="order-1 md:order-2">
+                    <div class="inline-block bg-forest-100 text-forest-700 px-4 py-1 rounded-full text-sm font-semibold mb-4">ที่เที่ยวไกล้เคียง</div>
+                    <h2 class="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-6 leading-tight">เที่ยวน้ำตกเล่นน้ำ<br><span class="text-forest-700">น้ำตกห้วยโรง</span></h2>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                         โอโซนแพร่ อยู่ใกล้กับน้ำตกห้วยโรงที่เป็นอีกหนึ่งสถานที่เที่ยวของจังหวัดแพร่ และไกล้แหล่งท่องเที่ยวอื่นเช่นอ่างเก็บน้ำแม่คำมี หมู่บ้านชนเผ่าม้ง
+
+                     
+ 
+                    </p>
+                    <div class="flex items-center gap-4 text-forest-700 font-medium">
+                        <div class="w-12 h-12 rounded-full bg-forest-100 flex items-center justify-center">
+                            <i class="fa-solid fa-seedling text-xl"></i>
+                        </div>
+                        <span>น้ำไหลใสเย็น</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- 🌟 ส่วนที่ 4.5: รีวิวจากลูกค้า (Testimonials) -->
+    <section id="reviews" class="py-24 bg-forest-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-block bg-forest-200/50 text-forest-800 px-4 py-1 rounded-full text-sm font-semibold mb-4">รีวิวจากลูกค้า</div>
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-6">ความประทับใจจาก<span class="text-forest-700">ผู้มาเยือน</span></h2>
+                <p class="text-lg text-gray-600">
+                    เสียงตอบรับจากลูกค้าที่ได้มาสัมผัสบรรยากาศธรรมชาติ และลิ้มลองรสชาติอาหารที่ Ozone Phrae
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- รีวิว 1 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative">
+                    <i class="fa-solid fa-quote-left text-4xl text-forest-100 absolute top-6 left-6"></i>
+                    <div class="flex items-center gap-1 mb-4 text-yellow-400 relative z-10">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6 relative z-10 italic">
+                        "บรรยากาศดีมากๆ เงียบสงบ เหมาะกับการมาพักผ่อนชาร์จแบตให้ตัวเองสุดๆ กาแฟอร่อยมาก พี่เจ้าของเป็นกันเองสุดๆ แนะนำเลยครับ"
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
+                            K
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900">คุณกิตติศักดิ์</h4>
+                            <p class="text-sm text-gray-500">สายแคมป์ปิ้ง</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- รีวิว 2 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative">
+                    <i class="fa-solid fa-quote-left text-4xl text-forest-100 absolute top-6 left-6"></i>
+                    <div class="flex items-center gap-1 mb-4 text-yellow-400 relative z-10">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6 relative z-10 italic">
+                        "ประทับใจหมูกระทะตอนเย็นมากครับ ทานหมูกระทะท่ามกลางอากาศเย็นๆ ฟินสุดๆ ห้องน้ำสะอาด ลานกางเต็นท์เป็นระเบียบ"
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
+                            N
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900">คุณณัฐวุฒิ</h4>
+                            <p class="text-sm text-gray-500">ลูกค้าครอบครัว</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- รีวิว 3 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative">
+                    <i class="fa-solid fa-quote-left text-4xl text-forest-100 absolute top-6 left-6"></i>
+                    <div class="flex items-center gap-1 mb-4 text-yellow-400 relative z-10">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6 relative z-10 italic">
+                        "คาเฟ่สวยมาก ถ่ายรูปได้ทุกมุมเลย เมนูน้ำลิ้นจี่สดชื่นมากค่ะ ได้เดินชมสวนด้วย ไว้มีโอกาสจะกลับมาพักแบบกางเต็นท์แน่นอน"
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
+                            S
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900">คุณสุชาดา</h4>
+                            <p class="text-sm text-gray-500">สายคาเฟ่</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+         <!-- 📞 ส่วนที่ 5: ติดต่อเรา (Contact & Location) -->
+    <section id="contact" class="py-24 bg-white relative overflow-hidden">
+        <!-- พื้นหลังตกแต่ง -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-earth-100 rounded-full opacity-50"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-forest-50 rounded-full opacity-50"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 flex flex-col lg:flex-row">
+                
+                <!-- ข้อมูลติดต่อ -->
+                <div class="w-full lg:w-5/12 bg-forest-700 p-10 text-white flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-3xl font-heading font-bold mb-2">ติดต่อสอบถาม</h2>
+                        <p class="text-forest-100 mb-8">และสำรองพื้นที่กางเต็นท์ล่วงหน้า</p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-forest-600 rounded-full flex items-center justify-center">
+                                    <i class="fa-brands fa-facebook-f text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-forest-200">Facebook Page</p>
+                                    <p class="font-medium text-lg">โอโซนแพร่ คาเฟ่ & แคมป์ปิ้ง</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-forest-600 rounded-full flex items-center justify-center">
+                                    <i class="fa-brands fa-tiktok text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-forest-200">TikTok</p>
+                                    <p class="font-medium text-lg">@ozonephrae</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-forest-600 rounded-full flex items-center justify-center">
+                                    <i class="fa-solid fa-phone text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-forest-200">เบอร์โทรศัพท์ / ไอดีไลน์</p>
+                                    <p class="font-medium text-lg">087-176-6559</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-forest-600 rounded-full flex items-center justify-center">
+                                    <i class="fa-solid fa-location-dot text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-forest-200">สถานที่ตั้ง</p>
+                                    <p class="font-medium">ใกล้กับน้ำตกห้วยโรง ตำบลห้วยโรง อำเภอร้องกวาง จังหวัดแพร่</p>
+                                    <a href="https://maps.app.goo.gl/3RVJpJ7tRo16xa5MA" target="_blank" class="text-forest-300 hover:text-white text-sm mt-1 inline-block underline transition-colors"><i class="fa-solid fa-map-location-dot mr-1"></i> ดูแผนที่นำทางบนแอป</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-12">
+                        <button class="w-full bg-white text-forest-800 font-bold py-4 rounded-xl hover:bg-forest-50 transition-colors shadow-md flex justify-center items-center gap-2">
+                            <i class="fa-brands fa-line text-2xl text-[#00B100]"></i> แอดไลน์จองที่พัก
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- แผนที่ Google Maps -->
+                <div class="w-full lg:w-7/12 min-h-[400px] bg-gray-200 relative group">
+                    <iframe 
+                        src="https://maps.google.com/maps?q=โอโซนแพร่%20Ozone%20Phrae%20cafe&camping&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0; position: absolute; top:0; left:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                    <!-- ปุ่มเปิด Maps บนมือถือ -->
+                    <a href="https://maps.app.goo.gl/3RVJpJ7tRo16xa5MA" target="_blank" class="absolute bottom-6 right-6 bg-white text-forest-800 font-bold py-3 px-6 rounded-xl hover:bg-forest-50 transition-colors shadow-lg flex items-center gap-2 z-10 border border-gray-100">
+                        <i class="fa-solid fa-location-arrow text-[#4285F4]"></i> นำทาง
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+ <!-- Footer (Standard from Index) -->
+    <footer class="bg-forest-900 text-forest-100 py-12 border-t border-forest-800 text-center">
+        <div class="max-w-7xl mx-auto px-4 mb-8">
+            <div class="flex items-center justify-center gap-2 mb-6">
+                <i class="fa-solid fa-leaf text-forest-500 text-3xl"></i>
+                <span class="font-heading font-bold text-2xl text-white tracking-wide">OZONE<span class="text-forest-500">PHRAE</span></span>
+            </div>
+            <div class="flex justify-center gap-8 mb-8 text-sm">
+                <a href="#" class="hover:text-white transition-colors">Facebook</a>
+                <a href="#" class="hover:text-white transition-colors">Instagram</a>
+                <a href="#" class="hover:text-white transition-colors">TikTok</a>
+                <a href="#" class="hover:text-white transition-colors">Line Official</a>
+            </div>
+        </div>
+        <p class="text-forest-700 text-xs tracking-widest uppercase">© 2024 Ozone Phrae Cafe & Camping. All rights reserved.</p>
+        <div class="mt-4">
+            <a href="ozone_admin_login.html" class="inline-block bg-forest-800 text-forest-400 px-4 py-1 rounded-full text-[10px] hover:text-white transition-all uppercase font-bold tracking-tighter">Admin Access</a>
+        </div>
+    </footer>
+
+
+    <!-- Scripts: ระบบ Mobile Menu และ Carousel -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. ระบบ Mobile Menu สั่งการด้วยปุ่ม ---
+           // Mobile Menu Control
+            const mobileBtn = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+
+            mobileBtn.addEventListener('click', () => {
+                const isOpen = mobileMenu.classList.contains('active');
+                
+                if (!isOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    // Small delay to trigger animation
+                    setTimeout(() => mobileMenu.classList.add('active'), 10);
+                    menuIcon.classList.replace('fa-bars', 'fa-xmark');
+                } else {
+                    mobileMenu.classList.remove('active');
+                    // Wait for transition then hide
+                    setTimeout(() => mobileMenu.classList.add('hidden'), 300);
+                    menuIcon.classList.replace('fa-xmark', 'fa-bars');
+                }
+            });
+            // ปิดเมนูอัตโนมัติเมื่อมีการกด Link ภายในหน้าเดียวกัน
+            const menuLinks = document.querySelectorAll('.mobile-link');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    setTimeout(() => mobileMenu.classList.add('hidden'), 300);
+                    menuIcon.classList.replace('fa-xmark', 'fa-bars');
+                });
+            });
+
+            // --- 2. ระบบ Carousel (สำหรับลานกางเต็นท์) ---
+            const track = document.getElementById('carousel-track');
+            const slides = Array.from(track.children);
+            const prevBtn = document.getElementById('prev-slide');
+            const nextBtn = document.getElementById('next-slide');
+            let currentIndex = 0;
+
+            const updateCarousel = () => {
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            };
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % slides.length;
+                updateCarousel();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                updateCarousel();
+            });
+
+            // Auto Play เลื่อนรูปทุก 5 วินาที
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % slides.length;
+                updateCarousel();
+            }, 5000);
+        });
+
+        // Effect Navbar เปลี่ยนเงาเมื่อมีการ Scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-2', 'shadow-lg');
+            } else {
+                nav.classList.remove('py-2', 'shadow-lg');
+            }
+        });
+    </script>
+</body>
+</html>
