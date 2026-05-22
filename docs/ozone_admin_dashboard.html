@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Hub | Ozone Phrae</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Kanit', 'sans-serif'],
+                        heading: ['Prompt', 'sans-serif']
+                    },
+                    colors: { 
+                        forest: { 50: '#f0f9f0', 600: '#16a34a', 700: '#15803d', 900: '#14532d' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hub-card { @apply bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:-translate-y-2 flex flex-col items-center text-center group; }
+        .stat-card { @apply bg-white p-6 rounded-3xl border border-slate-100 shadow-sm; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen custom-scrollbar">
+
+    <!-- Top Navigation -->
+    <header class="h-20 bg-white border-b border-slate-100 sticky top-0 z-30 px-10 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-forest-700 rounded-xl flex items-center justify-center text-white shadow-lg">
+                <i class="fa-solid fa-gauge-high"></i>
+            </div>
+            <h1 class="text-xl font-heading font-bold">Admin <span class="text-forest-600 tracking-tight">Dashboard</span></h1>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="flex flex-col items-end hidden md:block">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">ยินดีต้อนรับ</p>
+                <p class="text-sm font-bold text-slate-900">Administrator</p>
+            </div>
+            <div class="h-8 w-[1px] bg-slate-100 hidden md:block"></div>
+            <button onclick="handleLogout()" class="flex items-center gap-2 text-rose-500 hover:text-rose-700 font-bold text-sm transition-colors">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span class="hidden sm:inline">ออกจากระบบ</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-8 lg:p-12 animate-fade">
+        
+        <!-- Welcome Section -->
+        <div class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h2 class="text-4xl font-heading font-black text-slate-900 tracking-tight">แผงควบคุมระบบหลังบ้าน</h2>
+                <p class="text-slate-500 font-medium mt-2">จัดการข้อมูลร้านอาหาร ห้องพัก และบทความข่าวสารของคุณ</p>
+            </div>
+            <div class="text-sm font-bold text-slate-400 bg-white px-5 py-2.5 rounded-2xl border border-slate-100 shadow-sm">
+                <i class="fa-solid fa-calendar-day mr-2 text-forest-600"></i>
+                <span id="current-date">...</span>
+            </div>
+        </div>
+
+        <!-- 🚀 Quick Access Hub 🚀 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <!-- Manage Bookings -->
+            <a href="ozone_admin_booking.html" class="hub-card">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-[1.5rem] flex items-center justify-center text-2xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-inner">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h3 class="text-xl font-heading font-bold text-slate-900">จัดการการจอง</h3>
+                <p class="text-xs text-slate-400 mt-2 font-medium">ดูคิวที่พักและยืนยันการมัดจำ</p>
+                <div class="mt-6 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all">Go to Bookings <i class="fa-solid fa-arrow-right ml-1"></i></div>
+            </a>
+
+            <!-- Manage Rooms -->
+            <a href="ozone_admin_rooms.html" class="hub-card">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-[1.5rem] flex items-center justify-center text-2xl mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-inner">
+                    <i class="fa-solid fa-house-chimney-window"></i>
+                </div>
+                <h3 class="text-xl font-heading font-bold text-slate-900">จัดการที่พัก</h3>
+                <p class="text-xs text-slate-400 mt-2 font-medium">แก้ไขราคาและสถานะห้องพัก</p>
+                <div class="mt-6 text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all">Go to Rooms <i class="fa-solid fa-arrow-right ml-1"></i></div>
+            </a>
+
+            <!-- Manage Menu -->
+            <a href="ozone_admin_menu_items.html" class="hub-card">
+                <div class="w-16 h-16 bg-orange-50 text-orange-600 rounded-[1.5rem] flex items-center justify-center text-2xl mb-6 group-hover:bg-orange-600 group-hover:text-white transition-all shadow-inner">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+                <h3 class="text-xl font-heading font-bold text-slate-900">จัดการเมนูอาหาร</h3>
+                <p class="text-xs text-slate-400 mt-2 font-medium">เพิ่มเมนูและจัดการหมวดหมู่</p>
+                <div class="mt-6 text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all">Go to Menu <i class="fa-solid fa-arrow-right ml-1"></i></div>
+            </a>
+
+            <!-- Manage Articles -->
+            <a href="ozone_phrae_admin.html" class="hub-card">
+                <div class="w-16 h-16 bg-purple-50 text-purple-600 rounded-[1.5rem] flex items-center justify-center text-2xl mb-6 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-inner">
+                    <i class="fa-solid fa-feather-pointed"></i>
+                </div>
+                <h3 class="text-xl font-heading font-bold text-slate-900">จัดการบทความ</h3>
+                <p class="text-xs text-slate-400 mt-2 font-medium">เขียนข่าวสารและกิจกรรมในสวน</p>
+                <div class="mt-6 text-[10px] font-black text-purple-600 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all">Go to Blog <i class="fa-solid fa-arrow-right ml-1"></i></div>
+            </a>
+        </div>
+
+        <!-- 📊 Business Pulse (Quick Stats) 📊 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <div class="lg:col-span-2 bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm">
+                <div class="flex justify-between items-center mb-10">
+                    <h3 class="text-xl font-heading font-bold text-slate-900 flex items-center gap-3">
+                        <i class="fa-solid fa-chart-line text-forest-600"></i> สรุปรายได้วันนี้
+                    </h3>
+                    <div class="flex gap-4">
+                        <div class="text-right">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">รายได้รวม</p>
+                            <p id="stat-total-revenue" class="text-2xl font-black text-forest-700 tracking-tighter">฿0.00</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-64 flex items-end gap-2">
+                    <!-- จำลองกราฟแท่งด้วย Tailwind -->
+                    <div class="flex-1 bg-forest-50 hover:bg-forest-100 transition-all rounded-t-2xl relative group" style="height: 40%">
+                        <div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 text-[10px] font-bold bg-slate-900 text-white px-2 py-1 rounded">จ.</div>
+                    </div>
+                    <div class="flex-1 bg-forest-50 hover:bg-forest-100 transition-all rounded-t-2xl relative group" style="height: 60%"></div>
+                    <div class="flex-1 bg-forest-50 hover:bg-forest-100 transition-all rounded-t-2xl relative group" style="height: 45%"></div>
+                    <div class="flex-1 bg-forest-50 hover:bg-forest-100 transition-all rounded-t-2xl relative group" style="height: 80%"></div>
+                    <div class="flex-1 bg-forest-50 hover:bg-forest-100 transition-all rounded-t-2xl relative group" style="height: 95%"></div>
+                    <div class="flex-1 bg-forest-700 rounded-t-2xl relative group" style="height: 70%">
+                         <div class="absolute -top-10 left-1/2 -translate-x-1/2 text-xs font-bold bg-forest-700 text-white px-3 py-1.5 rounded-xl shadow-lg">วันนี้</div>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-6 px-2 text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                    <span>จ.</span><span>อ.</span><span>พ.</span><span>พฤ.</span><span>ศ.</span><span>ส.</span><span>อา.</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <div class="stat-card">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">จำนวนออเดอร์ (อาหาร)</p>
+                    <h3 id="stat-food-count" class="text-3xl font-black text-slate-900">0</h3>
+                </div>
+                <div class="stat-card">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">จำนวนการจอง (ที่พัก)</p>
+                    <h3 id="stat-booking-count" class="text-3xl font-black text-blue-600">0</h3>
+                </div>
+                <div class="stat-card bg-slate-900 border-none text-white overflow-hidden relative">
+                    <div class="relative z-10">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">อัตราการเข้าพัก</p>
+                        <h3 id="stat-occupancy" class="text-3xl font-black text-white">0%</h3>
+                        <div class="w-full h-1.5 bg-white/10 rounded-full mt-4">
+                            <div id="stat-occupancy-bar" class="h-full bg-forest-600 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-bed absolute -bottom-4 -right-4 text-8xl text-white/5 rotate-12"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📋 Recent Activity 📋 -->
+        <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+            <div class="p-8 border-b border-slate-50 flex justify-between items-center">
+                <h3 class="text-xl font-heading font-bold text-slate-900">ออเดอร์อาหารล่าสุด</h3>
+                <a href="ozone_admin_menu_items.html" class="text-xs font-bold text-forest-600 uppercase tracking-widest hover:underline">จัดการทั้งหมด</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-widest border-b border-slate-50">
+                            <th class="py-5 px-10">ลูกค้า / โต๊ะ</th>
+                            <th class="py-5 px-8 text-right">ยอดรวม</th>
+                            <th class="py-5 px-8 text-center">สถานะ</th>
+                            <th class="py-5 px-10 text-right">เวลา</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-orders" class="divide-y divide-slate-50">
+                        <!-- Injected here -->
+                        <tr><td colspan="4" class="p-20 text-center text-slate-300 italic">ไม่มีรายการคำสั่งซื้อวันนี้</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API = 'api_dashboard.php';
+
+        async function init() {
+            // Check login status
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                window.location.href = 'ozone_admin_login.html';
+                return;
+            }
+
+            updateDate();
+            await fetchStats();
+        }
+
+        function updateDate() {
+            const now = new Date();
+            document.getElementById('current-date').innerText = now.toLocaleDateString('th-TH', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+            });
+        }
+
+        async function fetchStats() {
+            try {
+                const res = await fetch(`${API}?t=${Date.now()}`);
+                const data = await res.json();
+                
+                // Update Dashboard Stats
+                document.getElementById('stat-food-count').innerText = data.food_orders_count || 0;
+                document.getElementById('stat-booking-count').innerText = data.booking_count || 0;
+                document.getElementById('stat-occupancy').innerText = `${data.occupancy_rate || 0}%`;
+                document.getElementById('stat-occupancy-bar').style.width = `${data.occupancy_rate || 0}%`;
+                
+                const totalRev = (data.food_revenue || 0) + (data.booking_revenue || 0);
+                document.getElementById('stat-total-revenue').innerText = `฿${totalRev.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+                // Update Recent Orders
+                if (data.recent_orders && data.recent_orders.length > 0) {
+                    const list = document.getElementById('recent-orders');
+                    list.innerHTML = data.recent_orders.map(o => `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-6 px-10">
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-slate-900">${o.customer_name}</span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${o.table_number}</span>
+                                </div>
+                            </td>
+                            <td class="py-6 px-8 text-right font-black text-forest-700">฿${parseFloat(o.total_amount).toLocaleString()}</td>
+                            <td class="py-6 px-8 text-center">
+                                <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-500">${o.status}</span>
+                            </td>
+                            <td class="py-6 px-10 text-right text-xs font-bold text-slate-400">
+                                ${new Date(o.created_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error("Fetch stats error", err);
+            }
+        }
+
+        function handleLogout() {
+            if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
+                localStorage.removeItem('isLoggedIn');
+                window.location.href = 'ozone_admin_login.html';
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

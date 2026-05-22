@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ozone Analytics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; }
+        .stat-card { @apply bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 hover:shadow-md transition-all; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">แผงควบคุมสถิติ <span class="text-emerald-600">Ozone Phrae</span></h1>
+                <p class="text-slate-500">ข้อมูลการเข้าชมเว็บไซต์แบบ Real-time</p>
+            </div>
+            <div id="auth-status" class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest">
+                Connecting...
+            </div>
+        </div>
+
+        <!-- Summary Widgets -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="stat-card">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase">Total Visits</span>
+                </div>
+                <h2 id="total-visits" class="text-4xl font-bold">0</h2>
+                <p class="text-slate-400 text-sm mt-2">จำนวนการเข้าชมทั้งหมด</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase">Mobile Users</span>
+                </div>
+                <h2 id="mobile-percent" class="text-4xl font-bold">0%</h2>
+                <p class="text-slate-400 text-sm mt-2">สัดส่วนผู้ใช้ผ่านมือถือ</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-400 uppercase">Top Page</span>
+                </div>
+                <h2 id="top-page" class="text-xl font-bold truncate">Loading...</h2>
+                <p class="text-slate-400 text-sm mt-2">หน้าที่ถูกเข้าชมบ่อยที่สุด</p>
+            </div>
+        </div>
+
+        <!-- Detailed Stats Table -->
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-8 border-b border-slate-50 flex justify-between items-center">
+                <h3 class="font-bold text-lg">ประวัติการเข้าชมล่าสุด</h3>
+                <i class="fa-solid fa-clock-rotate-left text-slate-300"></i>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <th class="px-8 py-4">เวลา</th>
+                            <th class="px-8 py-4">หน้าเว็บ</th>
+                            <th class="px-8 py-4">อุปกรณ์</th>
+                            <th class="px-8 py-4">ที่มา</th>
+                        </tr>
+                    </thead>
+                    <tbody id="visit-logs" class="text-sm">
+                        <!-- Data rows inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getFirestore, collection, onSnapshot, query } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ozone-phrae';
+
+        const initDashboard = async () => {
+            // Auth Flow (Rule 3)
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    document.getElementById('auth-status').innerText = 'Connected: Live';
+                    startListeners();
+                }
+            });
+        };
+
+        const startListeners = () => {
+            const statsCol = collection(db, 'artifacts', appId, 'public', 'data', 'page_views');
+            
+            // Real-time Update (Rule 2: Fetch all then process in JS)
+            onSnapshot(statsCol, (snapshot) => {
+                const visits = [];
+                snapshot.forEach(doc => visits.push({ id: doc.id, ...doc.data() }));
+
+                // เรียงลำดับตามเวลาล่าสุด
+                visits.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+                updateUI(visits);
+            }, (error) => {
+                console.error("Dashboard error:", error);
+            });
+        };
+
+        const updateUI = (visits) => {
+            // 1. Total Visits
+            document.getElementById('total-visits').innerText = visits.length.toLocaleString();
+
+            // 2. Mobile Percent
+            const mobileCount = visits.filter(v => v.device_type === 'Mobile').length;
+            const mobilePercent = visits.length > 0 ? Math.round((mobileCount / visits.length) * 100) : 0;
+            document.getElementById('mobile-percent').innerText = `${mobilePercent}%`;
+
+            // 3. Top Page
+            const pages = {};
+            visits.forEach(v => {
+                pages[v.page_title] = (pages[v.page_title] || 0) + 1;
+            });
+            const topPage = Object.entries(pages).sort((a, b) => b[1] - a[1])[0];
+            document.getElementById('top-page').innerText = topPage ? topPage[0] : 'None';
+
+            // 4. Log Table
+            const logTable = document.getElementById('visit-logs');
+            logTable.innerHTML = visits.slice(0, 15).map(v => {
+                const date = v.timestamp ? new Date(v.timestamp.seconds * 1000).toLocaleString('th-TH') : 'Just now';
+                return `
+                    <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                        <td class="px-8 py-5 text-slate-400 font-medium">${date}</td>
+                        <td class="px-8 py-5 font-bold text-slate-700">${v.page_title}</td>
+                        <td class="px-8 py-5">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${v.device_type === 'Mobile' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'}">
+                                ${v.device_type}
+                            </span>
+                        </td>
+                        <td class="px-8 py-5 text-slate-400">${v.referrer}</td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        initDashboard();
+    </script>
+</body>
+</html>

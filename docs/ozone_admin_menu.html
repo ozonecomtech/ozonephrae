@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Ozone Phrae</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Kanit', 'sans-serif'],
+                        heading: ['Prompt', 'sans-serif']
+                    },
+                    colors: { 
+                        forest: { 600: '#16a34a', 700: '#15803d', 900: '#14532d' },
+                        pending: '#f59e0b',    // ส้ม (1.รอรับรายการ)
+                        preparing: '#3b82f6',  // ฟ้า (2.รับรายการแล้ว)
+                        cooking: '#a855f7',    // ม่วง (3.กำลังทำอาหาร)
+                        ready: '#84cc16',      // เขียวมะนาว (4.ทำเสร็จแล้ว)
+                        served: '#64748b',     // เทา (เสิร์ฟแล้ว)
+                        late: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f1f5f9; }
+        .order-card { 
+            @apply bg-white rounded-[2.5rem] shadow-lg border-t-[14px] p-8 flex flex-col h-full transition-all duration-500 relative; 
+        }
+        .order-card.pending { border-color: theme('colors.pending'); }
+        .order-card.preparing { border-color: theme('colors.preparing'); }
+        .order-card.cooking { border-color: theme('colors.cooking'); }
+        .order-card.ready { border-color: theme('colors.ready'); }
+        .order-card.served { @apply opacity-60 grayscale-[0.5]; border-color: theme('colors.served'); }
+        
+        .item-row { @apply flex justify-between items-center py-4 border-b border-slate-200 last:border-0 transition-all; }
+        .item-done .item-name { @apply line-through text-slate-400 decoration-forest-600 decoration-2; }
+        .item-done .item-qty-box { @apply bg-slate-300 !important; }
+        
+        @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.7; } }
+        .pulse-urgent { animation: pulse-ring 1.5s infinite; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="font-sans text-slate-800 p-6 md:p-10 min-h-screen">
+
+    <header class="max-w-[1800px] mx-auto flex flex-col xl:flex-row justify-between items-start xl:items-center mb-10 gap-6 bg-white p-8 rounded-[3rem] shadow-sm">
+        <div class="flex items-center gap-6">
+            <div class="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl rotate-2">
+                <i class="fa-solid fa-clipboard-list text-3xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl md:text-4xl font-heading font-black text-slate-900 tracking-tight leading-none">ระบบจัดการ <span class="text-forest-600">ห้องครัว</span></h1>
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] mt-2 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Ozone Phrae Kitchen Monitor
+                </p>
+            </div>
+        </div>
+        
+        <!-- สรุปตัวเลขรายการแยกตามสถานะ -->
+        <div class="flex flex-wrap items-center gap-4 w-full xl:w-auto">
+            <div class="flex-1 xl:flex-none bg-slate-50 px-8 py-4 rounded-2xl border border-slate-100 flex items-center gap-6 shadow-inner overflow-x-auto">
+                <div class="text-center shrink-0">
+                    <p class="text-[15px] font-black uppercase text-slate-400 tracking-widest mb-1">ออเดอร์ใหม่</p>
+                    <span id="count-pending" class="text-2xl font-black text-pending leading-none">0</span>
+                </div>
+                <div class="w-px h-8 bg-slate-200 shrink-0"></div>
+                <div class="text-center shrink-0">
+                    <p class="text-[15px] font-black uppercase text-slate-400 tracking-widest mb-1">รับออเดอร์</p>
+                    <span id="count-preparing" class="text-2xl font-black text-preparing leading-none">0</span>
+                </div>
+                <div class="w-px h-8 bg-slate-200 shrink-0"></div>
+                <div class="text-center shrink-0">
+                    <p class="text-[15px] font-black uppercase text-slate-400 tracking-widest mb-1">กำลังทำ</p>
+                    <span id="count-cooking" class="text-2xl font-black text-cooking leading-none">0</span>
+                </div>
+                <div class="w-px h-8 bg-slate-200 shrink-0"></div>
+                <div class="text-center shrink-0">
+                    <p class="text-[15px] font-black uppercase text-slate-400 tracking-widest mb-1">รอเสิร์ฟ</p>
+                    <span id="count-ready" class="text-2xl font-black text-ready leading-none">0</span>
+                </div>
+            </div>
+            
+            <div class="flex gap-4 w-full sm:w-auto">
+                <button onclick="clearServedOrders()" class="flex-1 sm:flex-none bg-white border border-slate-200 text-slate-400 px-6 py-4 rounded-2xl font-bold hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center gap-3 active:scale-95 text-sm shadow-sm">
+                    <i class="fa-solid fa-broom"></i> <span class="hidden sm:inline">ล้างรายการเสิร์ฟ</span>
+                </button>
+                <button onclick="loadOrders()" class="flex-1 sm:flex-none bg-slate-900 text-white px-8 py-4 rounded-2xl shadow-lg font-bold hover:bg-forest-700 transition-all flex items-center justify-center gap-3 active:scale-95 text-sm uppercase tracking-widest">
+                    <i class="fa-solid fa-rotate"></i> รีเฟรช
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1800px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="order-grid">
+        <div class="col-span-full py-40 text-center">
+            <div class="inline-block w-14 h-14 border-4 border-slate-200 border-t-forest-600 rounded-full animate-spin"></div>
+            <p class="mt-6 text-slate-400 font-bold uppercase tracking-[0.3em] text-xs">กำลังเชื่อมต่อฐานข้อมูล...</p>
+        </div>
+    </main>
+
+    <script>
+        const API = 'api_menu.php';
+        let orders = [];
+        
+        // สำหรับเก็บสถานะรายการย่อย (Checked Items) ผ่าน LocalStorage
+        const CHECKED_ITEMS_KEY = 'ozone_kitchen_checked_items';
+        let checkedItems = JSON.parse(localStorage.getItem(CHECKED_ITEMS_KEY) || '{}');
+
+        async function loadOrders() {
+            try {
+                const res = await fetch(`${API}?action=all_orders&t=${Date.now()}`);
+                const data = await res.json();
+                
+                // เรียงตามลำดับขั้นตอน: Pending -> Preparing -> Cooking -> Ready -> Served
+                orders = data.sort((a, b) => {
+                    const statusVal = { 
+                        'pending': 0, 
+                        'preparing': 1, 
+                        'cooking': 2, 
+                        'ready': 3, 
+                        'served': 4, 
+                        'cancelled': 5 
+                    };
+                    if (statusVal[a.status] !== statusVal[b.status]) {
+                        return statusVal[a.status] - statusVal[b.status];
+                    }
+                    // ถ้าสถานะเหมือนกัน ให้เอาออเดอร์เก่าขึ้นก่อน (FIFO) หรือตามความเหมาะสม
+                    return new Date(a.created_at) - new Date(b.created_at);
+                });
+
+                renderOrders();
+                updateStats();
+            } catch (err) { console.error("Fetch Error:", err); }
+        }
+
+        // อัปเดตตัวเลขสรุปรายการด้านบน
+        function updateStats() {
+            document.getElementById('count-pending').innerText = orders.filter(o => o.status === 'pending').length;
+            document.getElementById('count-preparing').innerText = orders.filter(o => o.status === 'preparing').length;
+            document.getElementById('count-cooking').innerText = orders.filter(o => o.status === 'cooking').length;
+            document.getElementById('count-ready').innerText = orders.filter(o => o.status === 'ready').length;
+        }
+
+        function getWaitingTime(createdAt) {
+            const now = new Date();
+            const orderTime = new Date(createdAt);
+            return Math.floor((now - orderTime) / 60000);
+        }
+
+        function renderOrders() {
+            const grid = document.getElementById('order-grid');
+            if (orders.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-40 bg-white rounded-[3rem] shadow-sm"><i class="fa-solid fa-mug-hot text-6xl text-slate-200 mb-6"></i><br><span class="text-slate-400 font-bold uppercase tracking-[0.3em] text-sm">ไม่มีออเดอร์ค้างในระบบ</span></div>';
+                return;
+            }
+
+            grid.innerHTML = orders.map(order => {
+                const timeStr = new Date(order.created_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                const waitMins = getWaitingTime(order.created_at);
+                const items = order.items || [];
+                
+                let actionBtn = '';
+                let timeBadge = `<span class="bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest"><i class="fa-regular fa-clock"></i> ${waitMins} นาที</span>`;
+
+                if (waitMins >= 15 && !['served', 'ready'].includes(order.status)) {
+                    timeBadge = `<span class="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest pulse-urgent"><i class="fa-regular fa-clock"></i> ${waitMins} นาที</span>`;
+                }
+
+                // แผนผังสถานะ 4 ขั้นตอนการรับรายการ
+                if (order.status === 'pending') {
+                    actionBtn = `<button onclick="updateStatus(${order.id}, 'preparing')" class="w-full bg-pending hover:bg-amber-600 text-white font-bold py-4 rounded-2xl shadow-md transition-all active:scale-95 uppercase tracking-widest text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-check"></i> 1. รับรายการอาหาร</button>`;
+                } else if (order.status === 'preparing') {
+                    actionBtn = `<button onclick="updateStatus(${order.id}, 'cooking')" class="w-full bg-preparing hover:bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-md transition-all active:scale-95 uppercase tracking-widest text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-fire-burner"></i> 2. เริ่มทำอาหาร</button>`;
+                } else if (order.status === 'cooking') {
+                    actionBtn = `<button onclick="updateStatus(${order.id}, 'ready')" class="w-full bg-cooking hover:bg-purple-600 text-white font-bold py-4 rounded-2xl shadow-md transition-all active:scale-95 uppercase tracking-widest text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-utensils"></i> 3. ทำเสร็จแล้ว</button>`;
+                } else if (order.status === 'ready') {
+                    actionBtn = `<button onclick="updateStatus(${order.id}, 'served')" class="w-full bg-ready hover:bg-lime-600 text-white font-bold py-4 rounded-2xl shadow-md transition-all active:scale-95 uppercase tracking-widest text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-bell"></i> 4. เสิร์ฟแล้ว</button>`;
+                } else {
+                    actionBtn = `<button onclick="deleteOrder(${order.id})" class="w-full bg-slate-100 text-slate-400 hover:bg-rose-500 hover:text-white py-3 rounded-2xl transition-all uppercase tracking-widest text-[10px] font-black flex items-center justify-center gap-2"><i class="fa-solid fa-trash"></i> ลบรายการ</button>`;
+                }
+
+                return `
+                    <div class="order-card ${order.status}">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <span class="bg-slate-900 text-white px-2 py-0.5 rounded text-[18px] font-black uppercase tracking-widest mb-1 inline-block">คิวที่ #${order.id}</span>
+                                <h2 class="text-2xl font-black text-slate-900 tracking-tighter leading-none mt-1">${order.table_number || 'RM'}</h2>
+                                <p class="text-sm font-bold text-slate-400 mt-1 truncate max-w-[140px]">${order.customer_name || 'ลูกค้าทั่วไป'}</p>
+                            </div>
+                            <div class="text-right flex flex-col items-end gap-2">
+                                <p class="text-lg font-black text-slate-800">${timeStr}</p>
+                                ${order.status === 'served' ? '<span class="text-emerald-500 text-[14px] font-bold"><i class="fa-solid fa-circle-check"></i> เสร็จสิ้น</span>' : timeBadge}
+                            </div>
+                        </div>
+
+                        <div class="flex-grow mb-6 border-t-2 border-dashed border-slate-100 pt-4 overflow-y-auto custom-scrollbar pr-1 max-h-[380px]">
+                            ${items.map((item, index) => {
+                                const foodName = item.menu_name || item.name || item.item_name || "ไม่ทราบชื่อ";
+                                const foodQty = item.quantity || item.qty || 1;
+                                const foodNote = item.note || "";
+                                
+                                const itemUniqueId = `${order.id}-${index}`;
+                                const isDone = checkedItems[itemUniqueId] === true;
+
+                                return `
+                                <div class="item-row group ${isDone ? 'item-done' : ''}" data-item-id="${itemUniqueId}">
+                                    <div class="flex gap-3 items-center w-full">
+                                        <div class="item-qty-box w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black text-xl shrink-0 transition-colors">
+                                            ${foodQty}
+                                        </div>
+                                        <div class="flex-grow">
+                                            <span class="item-name text-xl font-bold text-slate-900 block leading-tight">
+                                                ${foodName}
+                                            </span>
+                                            ${foodNote ? `<span class="text-rose-500 font-bold italic text-xs mt-0.5 block">* ${foodNote}</span>` : ''}
+                                        </div>
+                                        <button onclick="toggleItemDone('${itemUniqueId}')" 
+                                            class="checkmark-btn w-10 h-10 rounded-full border-2 transition-all active:scale-90 flex items-center justify-center shrink-0
+                                            ${isDone ? 'bg-forest-600 border-forest-600 text-white shadow-md' : 'border-slate-200 bg-white text-slate-300 hover:border-forest-500 hover:text-forest-500'}">
+                                            <i class="fa-solid fa-check text-xl"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <div class="mt-auto">
+                            ${actionBtn}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleItemDone(itemId) {
+            const row = document.querySelector(`[data-item-id="${itemId}"]`);
+            const btn = row.querySelector('.checkmark-btn');
+            
+            if (checkedItems[itemId]) {
+                delete checkedItems[itemId];
+                row.classList.remove('item-done');
+                btn.classList.add('text-slate-300', 'border-slate-200', 'bg-white');
+                btn.classList.remove('bg-forest-600', 'border-forest-600', 'text-white', 'shadow-md');
+            } else {
+                checkedItems[itemId] = true;
+                row.classList.add('item-done');
+                btn.classList.remove('text-slate-300', 'border-slate-200', 'bg-white');
+                btn.classList.add('bg-forest-600', 'border-forest-600', 'text-white', 'shadow-md');
+            }
+            localStorage.setItem(CHECKED_ITEMS_KEY, JSON.stringify(checkedItems));
+        }
+
+        async function updateStatus(id, status) {
+            try {
+                const fd = new FormData();
+                fd.append('action', 'update_status');
+                fd.append('order_id', id);
+                fd.append('status', status);
+
+                const res = await fetch(API, { method: 'POST', body: fd });
+                if (res.ok) { loadOrders(); }
+            } catch (err) { console.error("Update Status Error", err); }
+        }
+
+        async function deleteOrder(id) {
+            if(!confirm("ลบออเดอร์นี้ออกจากฐานข้อมูลถาวร?")) return;
+            try {
+                const fd = new FormData();
+                fd.append('action', 'delete');
+                fd.append('id', id);
+                const res = await fetch(API, { method: 'POST', body: fd });
+                if (res.ok) {
+                    Object.keys(checkedItems).forEach(key => {
+                        if (key.startsWith(`${id}-`)) delete checkedItems[key];
+                    });
+                    localStorage.setItem(CHECKED_ITEMS_KEY, JSON.stringify(checkedItems));
+                    loadOrders();
+                }
+            } catch (err) { console.error("Delete Error", err); }
+        }
+
+        async function clearServedOrders() {
+            if(!confirm("ล้างออเดอร์ที่เสิร์ฟแล้วทั้งหมดออกจากหน้าจอ?")) return;
+            try {
+                const fd = new FormData();
+                fd.append('action', 'clear_served');
+                const res = await fetch(API, { method: 'POST', body: fd });
+                if (res.ok) {
+                    // กรองเฉพาะรายการที่ยังไม่ถูกลบออกจากบอร์ดมาเก็บไว้ใน CheckedItems (เพื่อประหยัดพื้นที่ storage)
+                    // หรือจะล้างทั้งหมดตามความต้องการของคุณ
+                    loadOrders();
+                }
+            } catch (err) { console.error("Clear Served Error", err); }
+        }
+
+        window.onload = () => {
+            loadOrders();
+            setInterval(loadOrders, 15000); 
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Rooms | Ozone Phrae Premium Admin</title>
+    
+    <!-- Professional Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Tools -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Kanit', 'sans-serif'],
+                        heading: ['Prompt', 'sans-serif']
+                    },
+                    colors: { 
+                        forest: { 50: '#f0fdf4', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d' } 
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; }
+        .glass-nav { @apply bg-white/90 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-40; }
+        .admin-card { 
+            @apply bg-white rounded-[2.5rem] border border-slate-200/50 shadow-sm transition-all duration-500 ease-out;
+            box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.05);
+        }
+        .admin-card:hover { @apply -translate-y-1; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08); }
+        .table-row { @apply transition-all duration-300 hover:bg-slate-50/50; }
+        .badge-status { @apply px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border flex items-center justify-center gap-2; }
+        .modal-section { @apply bg-slate-50/50 p-8 rounded-[2.5rem] border border-slate-100; }
+        .form-label { @apply text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-2 mb-2 block; }
+        .form-input { 
+            @apply w-full bg-white border-2 border-transparent rounded-2xl px-6 py-4 outline-none text-slate-800 font-medium transition-all shadow-sm;
+            @apply focus:border-forest-600 focus:ring-8 focus:ring-forest-600/5;
+        }
+        .drop-zone { @apply relative border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center bg-white transition-all cursor-pointer hover:border-forest-600 hover:bg-forest-50/30; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .animate-in { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-800 custom-scrollbar">
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="max-w-[1600px] mx-auto h-24 flex items-center justify-between px-10">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-forest-700 rounded-2xl flex items-center justify-center text-white shadow-lg rotate-3">
+                    <i class="fa-solid fa-hotel text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-heading font-bold text-slate-900 uppercase tracking-tighter">Ozone <span class="text-forest-600">Rooms</span></h1>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mt-1">Property Management</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="hidden md:flex gap-8 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                    <a href="ozone_admin_dashboard.html" class="hover:text-forest-700 transition-colors">แผงควบคุม</a>
+                    <a href="#" class="text-forest-700 border-b-2 border-forest-700 pb-1">จัดการที่พัก</a>
+                    <a href="ozone_admin_booking.html" class="hover:text-forest-700 transition-colors">การจอง</a>
+                </div>
+                <button onclick="openModal()" class="bg-slate-900 hover:bg-forest-700 text-white font-black py-4 px-8 rounded-2xl shadow-xl transition-all flex items-center gap-3 active:scale-95 text-xs uppercase tracking-widest">
+                    <i class="fa-solid fa-plus"></i> เพิ่มที่พักใหม่
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-[1600px] mx-auto p-10 md:p-14 animate-in">
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-14">
+            <div class="admin-card p-8 flex items-center gap-6 border-l-8 border-l-blue-500">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-bed"></i></div>
+                <div><p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">ที่พักทั้งหมด</p><h3 id="room-total-count" class="text-3xl font-black text-slate-900">0</h3></div>
+            </div>
+            <div class="admin-card p-8 flex items-center gap-6 border-l-8 border-l-emerald-500">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-circle-check"></i></div>
+                <div><p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">เปิดให้บริการ</p><h3 id="room-active-count" class="text-3xl font-black text-slate-900">0</h3></div>
+            </div>
+            <div class="admin-card p-8 flex items-center gap-6 border-l-8 border-l-amber-500">
+                <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-3xl flex items-center justify-center text-2xl shadow-inner"><i class="fa-solid fa-tools"></i></div>
+                <div><p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">ปิดปรับปรุง</p><h3 id="room-repair-count" class="text-3xl font-black text-slate-900">0</h3></div>
+            </div>
+        </div>
+
+        <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-10 gap-8">
+            <h2 class="text-4xl font-heading font-black text-slate-900 tracking-tight">รายการที่พักทั้งหมด</h2>
+            <div class="relative w-full sm:w-[450px]">
+                <i class="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                <input type="text" id="search-input" onkeyup="filterRooms()" placeholder="ค้นหาชื่อที่พักหรือประเภท..." 
+                       class="w-full bg-white border border-slate-200 rounded-[2rem] pl-14 pr-6 py-4 outline-none focus:ring-8 focus:ring-forest-600/5 transition-all text-sm font-medium shadow-sm">
+            </div>
+        </div>
+
+        <div class="admin-card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100">
+                            <th class="py-7 px-10">ภาพที่พัก</th>
+                            <th class="py-7 px-8">ชื่อที่พัก / ประเภท</th>
+                            <th class="py-7 px-8 text-center">ความจุ</th>
+                            <th class="py-7 px-8">ราคาเหมา / มัดจำ</th>
+                            <th class="py-7 px-8 text-center">สถานะ</th>
+                            <th class="py-7 px-10 text-right">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="room-list" class="divide-y divide-slate-50"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Room Modal -->
+    <div id="room-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-md" onclick="closeModal()"></div>
+        <div class="relative bg-white w-full max-w-5xl rounded-[3.5rem] shadow-2xl overflow-hidden p-10 md:p-14 animate-in max-h-[95vh] overflow-y-auto custom-scrollbar">
+            
+            <div class="flex justify-between items-start mb-10">
+                <div>
+                    <h3 id="modal-title" class="text-4xl font-heading font-black text-slate-900 tracking-tight leading-none mb-3">แก้ไขข้อมูลที่พัก</h3>
+                    <p class="text-xs text-forest-600 font-bold uppercase tracking-widest">Property Details & Media Management</p>
+                </div>
+                <button onclick="closeModal()" class="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 hover:text-slate-900 transition-all flex items-center justify-center shadow-inner">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form id="room-form" onsubmit="handleSave(event)" class="space-y-10">
+                <input type="hidden" id="room-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="modal-section space-y-6">
+                        <label class="text-[10px] font-black text-forest-700 uppercase tracking-[0.2em] mb-2 block">General Information</label>
+                        <div>
+                            <label class="form-label">ชื่อที่พัก</label>
+                            <input type="text" id="name" name="name" required class="form-input" placeholder="เช่น บ้านริมน้ำ A1">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">ประเภท</label>
+                                <select id="type" name="type" class="form-input">
+                                    <option value="House">House (บ้านพัก)</option>
+                                    <option value="Tent">Tent (ลานกางเต็นท์)</option>
+                                    <option value="Glamping">Glamping (เช่าเต็นท์)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">รองรับ (คน)</label>
+                                <input type="number" id="capacity" name="capacity" required min="1" class="form-input" value="2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-section space-y-6">
+                        <label class="text-[10px] font-black text-blue-700 uppercase tracking-[0.2em] mb-2 block">Pricing & Deposit</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">ราคาต่อคืน (บาท)</label>
+                                <input type="number" id="price" name="price" required min="0" class="form-input" placeholder="1500">
+                            </div>
+                            <div>
+                                <label class="form-label">ค่ามัดจำ (บาท)</label>
+                                <input type="number" id="deposit_amount" name="deposit_amount" required min="0" class="form-input" value="100">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">สถานะที่พัก</label>
+                            <select id="status" name="status" class="form-input">
+                                <option value="available">พร้อมใช้งาน (Available)</option>
+                                <option value="maintenance">ปิดปรับปรุง (Maintenance)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🖼️ ระบบจัดการรูปภาพ (แก้ไขจุดนี้) -->
+                <div class="modal-section space-y-8">
+                    <label class="text-[10px] font-black text-rose-700 uppercase tracking-[0.2em] mb-2 block">Media & Gallery Management</label>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- 1. รูปหลัก -->
+                        <div>
+                            <label class="form-label">รูปภาพหลัก (Primary Image)</label>
+                            <div id="drop-zone-primary" class="drop-zone group" onclick="document.getElementById('file-primary').click()">
+                                <input type="file" id="file-primary" name="primary_image" accept="image/*" class="hidden" onchange="handleFileSelect(this, 'primary')">
+                                <div id="primary-status" class="text-center">
+                                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-300 group-hover:text-forest-600 transition-colors mb-4"></i>
+                                    <p class="text-sm font-bold text-slate-500">คลิกเพื่อเลือกรูปหลักใหม่</p>
+                                </div>
+                                <div id="primary-file-info" class="hidden flex items-center gap-4 bg-forest-50 p-4 rounded-2xl border border-forest-100">
+                                    <i class="fa-solid fa-image text-forest-600"></i>
+                                    <span id="primary-filename" class="text-xs font-bold text-forest-700 truncate max-w-[150px]">image.jpg</span>
+                                    <button type="button" onclick="event.stopPropagation(); viewPreview('primary')" class="ml-auto w-8 h-8 rounded-full bg-white flex items-center justify-center text-forest-600 shadow-sm hover:bg-forest-600 hover:text-white transition-all"><i class="fa-solid fa-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. รูปประกอบเดิม (Gallery ที่มีอยู่แล้ว) -->
+                        <div>
+                            <label class="form-label">รูปภาพเดิมในระบบ (Existing Gallery)</label>
+                            <div id="existing-gallery" class="grid grid-cols-3 gap-3 bg-white p-4 rounded-3xl border border-slate-100 min-h-[140px] max-h-[140px] overflow-y-auto custom-scrollbar">
+                                <!-- รูปจาก Database จะแสดงที่นี่ -->
+                                <div class="col-span-3 text-center py-8 text-slate-300 text-xs italic">ไม่มีรูปภาพเดิม</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. อัปโหลดรูปเพิ่ม -->
+                    <div>
+                        <label class="form-label">อัปโหลดรูปภาพเพิ่มเติม (Upload New Gallery)</label>
+                        <div id="drop-zone-gallery" class="drop-zone group" onclick="document.getElementById('file-gallery').click()">
+                            <input type="file" id="file-gallery" name="gallery_images[]" accept="image/*" multiple class="hidden" onchange="handleFileSelect(this, 'gallery')">
+                            <div id="gallery-status" class="text-center">
+                                <i class="fa-solid fa-images text-4xl text-slate-300 group-hover:text-forest-600 transition-colors mb-4"></i>
+                                <p class="text-sm font-bold text-slate-500">คลิกเพื่อเลือกรูปประกอบเพิ่ม</p>
+                            </div>
+                            <div id="gallery-file-info" class="hidden flex items-center gap-4 bg-forest-50 p-4 rounded-2xl border border-forest-100 w-full">
+                                <i class="fa-solid fa-layer-group text-forest-600"></i>
+                                <span id="gallery-count" class="text-xs font-bold text-forest-700">0 รูปที่เลือกใหม่</span>
+                                <button type="button" onclick="event.stopPropagation(); viewPreview('gallery')" class="ml-auto w-8 h-8 rounded-full bg-white flex items-center justify-center text-forest-600 shadow-sm hover:bg-forest-600 hover:text-white transition-all"><i class="fa-solid fa-eye"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="modal-section"><label class="form-label">รายละเอียดหลัก</label><textarea id="description" name="description" class="form-input h-32 resize-none pt-5" placeholder="อธิบายจุดเด่น..."></textarea></div>
+                    <div class="modal-section"><label class="form-label">สิ่งอำนวยความสะดวก (คั่นด้วยลูกน้ำ)</label><textarea id="facilities" name="facilities" class="form-input h-32 resize-none pt-5" placeholder="แอร์, ทีวี..."></textarea></div>
+                </div>
+
+                <button type="submit" id="btn-save" class="w-full bg-slate-900 hover:bg-forest-700 text-white font-black py-6 rounded-3xl shadow-2xl transition-all active:scale-[0.98] flex justify-center items-center gap-4 text-xl tracking-tight uppercase">
+                    <span>บันทึกข้อมูลที่พัก</span><i class="fa-solid fa-cloud-arrow-up"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-10">
+        <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onclick="closePreview()"></div>
+        <div class="relative max-w-4xl w-full">
+            <button onclick="closePreview()" class="absolute -top-12 right-0 text-white text-3xl hover:scale-110 transition-transform"><i class="fa-solid fa-circle-xmark"></i></button>
+            <div id="preview-container" class="w-full bg-white rounded-3xl overflow-hidden p-6 flex flex-wrap justify-center gap-4 max-h-[70vh] overflow-y-auto custom-scrollbar"></div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="toast" class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[200] opacity-0 translate-y-10 transition-all duration-500 bg-slate-900 text-white px-10 py-5 rounded-[2.5rem] shadow-2xl flex items-center gap-4 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-forest-500 text-xl"></i>
+        <p id="toast-msg" class="text-sm font-bold uppercase tracking-wide">สำเร็จ</p>
+    </div>
+
+    <script>
+        const API = 'api_booking.php';
+        let allRooms = [];
+        let selectedFiles = { primary: null, gallery: [] };
+        let imagesToDelete = []; // รายชื่อรูปภาพเดิมที่จะลบ
+
+        async function fetchRooms() {
+            try {
+                const res = await fetch(`${API}?action=all_rooms`);
+                allRooms = await res.json();
+                renderTable(allRooms);
+                updateStats();
+            } catch (err) { console.error(err); }
+        }
+
+        function renderTable(data) {
+            const list = document.getElementById('room-list');
+            list.innerHTML = data.map(r => `
+                <tr class="table-row group">
+                    <td class="py-7 px-10"><div class="w-24 h-16 rounded-2xl overflow-hidden shadow-sm border border-slate-100 bg-slate-100"><img src="${r.image_url}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150'"></div></td>
+                    <td class="py-7 px-8"><p class="font-black text-slate-900 leading-none mb-1 text-lg">${r.name}</p><p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">${r.type}</p></td>
+                    <td class="py-7 px-8 text-center text-sm font-black text-slate-600">${r.capacity} ท่าน</td>
+                    <td class="py-7 px-8"><p class="font-black text-slate-900 leading-none mb-1">฿${parseFloat(r.price).toLocaleString()}</p><p class="text-[9px] text-forest-600 font-bold uppercase tracking-widest">มัดจำ ฿${parseFloat(r.deposit_amount || 100).toLocaleString()}</p></td>
+                    <td class="py-7 px-8"><div class="flex justify-center"><span class="badge-status ${r.status === 'available' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}"><span class="w-2 h-2 rounded-full ${r.status === 'available' ? 'bg-emerald-500' : 'bg-amber-500'}"></span>${r.status}</span></div></td>
+                    <td class="py-7 px-10 text-right"><div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                        <button onclick="editRoom(${r.id})" class="w-11 h-11 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-blue-600 flex items-center justify-center shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteRoom(${r.id})" class="w-11 h-11 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 flex items-center justify-center shadow-sm"><i class="fa-solid fa-trash-can"></i></button>
+                    </div></td>
+                </tr>
+            `).join('');
+        }
+
+        function handleFileSelect(input, type) {
+            if (type === 'primary') {
+                selectedFiles.primary = input.files[0];
+                document.getElementById('primary-status').classList.add('hidden');
+                document.getElementById('primary-file-info').classList.remove('hidden');
+                document.getElementById('primary-filename').innerText = input.files[0].name;
+            } else {
+                selectedFiles.gallery = Array.from(input.files);
+                document.getElementById('gallery-status').classList.add('hidden');
+                document.getElementById('gallery-file-info').classList.remove('hidden');
+                document.getElementById('gallery-count').innerText = `${input.files.length} รูปที่เลือกใหม่`;
+            }
+        }
+
+        function editRoom(id) {
+            const r = allRooms.find(x => x.id == id);
+            if (!r) return;
+            document.getElementById('modal-title').innerText = 'แก้ไขข้อมูลที่พัก';
+            document.getElementById('room-id').value = r.id;
+            document.getElementById('name').value = r.name;
+            document.getElementById('type').value = r.type;
+            document.getElementById('capacity').value = r.capacity;
+            document.getElementById('price').value = r.price;
+            document.getElementById('deposit_amount').value = r.deposit_amount || 100;
+            document.getElementById('description').value = r.description || '';
+            document.getElementById('facilities').value = r.facilities || '';
+            document.getElementById('status').value = r.status;
+            
+            resetMediaUI();
+            
+            // 🌟 Render รูปประกอบเดิมจาก DB
+            const galleryContainer = document.getElementById('existing-gallery');
+            galleryContainer.innerHTML = '';
+            imagesToDelete = []; // รีเซ็ตรายการลบ
+
+            let galleryImages = [];
+            try {
+                if (typeof r.gallery_images === 'string' && r.gallery_images !== '') {
+                    galleryImages = JSON.parse(r.gallery_images);
+                } else if (Array.isArray(r.gallery_images)) {
+                    galleryImages = r.gallery_images;
+                }
+            } catch(e) { console.error("Gallery parse error", e); }
+
+            if (galleryImages.length > 0) {
+                galleryImages.forEach(url => {
+                    const div = document.createElement('div');
+                    div.className = "relative aspect-square rounded-xl overflow-hidden border border-slate-100 group shadow-sm bg-slate-50";
+                    div.innerHTML = `
+                        <img src="${url}" class="w-full h-full object-cover transition-transform group-hover:scale-110">
+                        <button type="button" onclick="markForDelete(this, '${url}')" class="absolute inset-0 bg-rose-500/80 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                            <i class="fa-solid fa-trash-can text-lg"></i>
+                        </button>
+                    `;
+                    galleryContainer.appendChild(div);
+                });
+            } else {
+                galleryContainer.innerHTML = '<div class="col-span-3 text-center py-8 text-slate-300 text-xs italic">ไม่มีรูปภาพเดิม</div>';
+            }
+
+            document.getElementById('room-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 🌟 ฟังก์ชันทำเครื่องหมายรูปที่จะลบ
+        function markForDelete(btn, url) {
+            if(confirm("ต้องการลบรูปภาพนี้จากระบบใช่หรือไม่?")) {
+                imagesToDelete.push(url);
+                btn.closest('div').remove();
+                if(document.getElementById('existing-gallery').children.length === 0) {
+                    document.getElementById('existing-gallery').innerHTML = '<div class="col-span-3 text-center py-8 text-slate-300 text-xs italic">ไม่มีรูปภาพเดิม</div>';
+                }
+            }
+        }
+
+        // 🌟 ปรับปรุงการดู Preview รูปที่เลือกใหม่
+        function viewPreview(type) {
+            const container = document.getElementById('preview-container');
+            container.innerHTML = '';
+            const files = type === 'primary' ? [selectedFiles.primary] : selectedFiles.gallery;
+            
+            if (!files || files.length === 0 || !files[0]) {
+                showToast("ยังไม่มีการเลือกรูปภาพใหม่");
+                return;
+            }
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = "relative animate-in";
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="w-48 h-32 object-cover rounded-2xl shadow-lg border-4 border-white">
+                        <div class="absolute -top-2 -right-2 bg-forest-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold">NEW</div>
+                    `;
+                    container.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+            document.getElementById('preview-modal').classList.remove('hidden');
+        }
+
+        async function handleSave(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save');
+            const id = document.getElementById('room-id').value;
+            const formData = new FormData(document.getElementById('room-form'));
+            formData.append('id', id);
+            
+            // 🌟 ส่งรายชื่อรูปที่จะลบไปด้วย
+            formData.append('deleted_images', JSON.stringify(imagesToDelete));
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-3"></i> กำลังประมวลผลรูปภาพ...';
+
+                const res = await fetch(`${API}?target=room_upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await res.json();
+
+                if (result.status === 'success') {
+                    showToast("บันทึกข้อมูลและอัปโหลดรูปภาพสำเร็จ");
+                    closeModal();
+                    fetchRooms();
+                } else {
+                    alert("บันทึกไม่สำเร็จ: " + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("เกิดข้อผิดพลาดในการเชื่อมต่อ", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'บันทึกข้อมูลที่พัก <i class="fa-solid fa-cloud-arrow-up"></i>';
+            }
+        }
+
+        function resetMediaUI() {
+            selectedFiles = { primary: null, gallery: [] };
+            imagesToDelete = [];
+            document.getElementById('primary-status').classList.remove('hidden');
+            document.getElementById('primary-file-info').classList.add('hidden');
+            document.getElementById('gallery-status').classList.remove('hidden');
+            document.getElementById('gallery-file-info').classList.add('hidden');
+        }
+
+        function openModal() {
+            document.getElementById('modal-title').innerText = 'เพิ่มที่พักใหม่';
+            document.getElementById('room-id').value = '';
+            document.getElementById('room-form').reset();
+            resetMediaUI();
+            document.getElementById('existing-gallery').innerHTML = '<div class="col-span-3 text-center py-8 text-slate-300 text-xs italic">โหมดเพิ่มที่พักใหม่</div>';
+            document.getElementById('room-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() { document.getElementById('room-modal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
+        function closePreview() { document.getElementById('preview-modal').classList.add('hidden'); }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.classList.replace('opacity-0', 'opacity-100');
+            t.classList.replace('translate-y-10', 'translate-y-0');
+            setTimeout(() => { t.classList.replace('opacity-100', 'opacity-0'); t.classList.replace('translate-y-0', 'translate-y-10'); }, 3000);
+        }
+
+        function updateStats() {
+            document.getElementById('room-total-count').innerText = allRooms.length;
+            document.getElementById('room-active-count').innerText = allRooms.filter(r => r.status === 'available').length;
+            document.getElementById('room-repair-count').innerText = allRooms.filter(r => r.status === 'maintenance').length;
+        }
+
+        window.onload = fetchRooms;
+    </script>
+</body>
+</html>

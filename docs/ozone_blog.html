@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+
+<!-- Ozone Analytics Pixel -->
+<script type="module" src="analytics.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กิจกรรมและโปรโมชั่น | Ozone Phrae</title>
+    
+    <!-- ฟอนต์ภาษาไทยจาก Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- ไอคอนจาก FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- นำเข้า Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'sans-serif'],
+                        heading: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        forest: {
+                            50: '#f2f7f4',
+                            100: '#e1efe5',
+                            500: '#3a7d44',
+                            700: '#2d5a27', // สีเขียวหลัก
+                            900: '#1a3a18',
+                        },
+                        earth: {
+                            50: '#fffbf9',
+                            100: '#fdf8f5', // สีพื้นหลังครีมอ่อนๆ
+                            500: '#8b5a2b',
+                            700: '#5c4033', // สีน้ำตาลไม้
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+      /* ค้นหาและแทนที่ในส่วน <style> */
+.glass-nav {
+    background: rgba(253, 248, 245, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+#mobile-menu {
+    transition: all 0.3s ease-in-out;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+}
+
+#mobile-menu.active {
+    max-height: 80vh;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+    </style>
+</head>
+<body class="bg-earth-100 text-gray-800 font-sans antialiased selection:bg-forest-500 selection:text-white">
+
+    <!-- Navbar: ปรับปรุงให้ Fixed และมี Mobile Menu -->
+    <nav class="fixed w-full z-50 glass-nav border-b border-forest-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                    <i class="fa-solid fa-leaf text-forest-700 text-2xl"></i>
+                    <span class="font-heading font-bold text-2xl text-forest-900 tracking-wide uppercase">OZONE<span class="text-forest-500">PHRAE</span></span>
+                </div>
+                
+                <!-- Desktop Menu: ซ่อนในมือถือ (hidden md:flex) -->
+                <div class="hidden lg:flex space-x-6 lg:space-x-8 items-center text-[15px]">
+                    <a href="index.html#about" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">เรื่องราวของเรา</a>
+                    <a href="index.html#cafe" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">คาเฟ่</a>
+                    <a href="index.html#menu" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">เมนูแนะนำ</a>
+                    <a href="index.html#camping" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">ลานกางเต็นท์</a>
+                    <a href="index.html#contact" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">ติดต่อเรา</a>
+                    <a href="ozone_blog.html" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">รู้จักเรามากขึ้น</a>
+                    <a href="ozone_events.html" class="text-gray-600 hover:text-forest-700 font-medium transition-colors">กิจกรรม</a>
+                    <a href="ozone_menu.html" class="bg-forest-700 text-white px-5 py-2 rounded-full hover:bg-forest-900 transition-colors shadow-md">สั่งอาหาร</a>
+                    <a href="ozone_booking.html" class="bg-forest-700 text-white px-5 py-2 rounded-full hover:bg-forest-900 transition-colors shadow-md">จองที่พัก</a>
+                </div>
+
+                <!-- Mobile menu button: แสดงเฉพาะมือถือ (md:hidden) -->
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-forest-700 focus:outline-none p-2 rounded-lg transition-all active:scale-90">
+                        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Container: ส่วนที่เด้งลงมา -->
+        <div id="mobile-menu" class="lg:hidden bg-white/95 backdrop-blur-md border-b border-forest-100 shadow-xl overflow-hidden hidden">
+            <div class="px-4 pt-2 pb-8 space-y-1">
+                <a href="index.html#about" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">เรื่องราวของเรา</a>
+                <a href="index.html#cafe" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">คาเฟ่</a>
+                <a href="index.html#menu" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">เมนูแนะนำ</a>
+                <a href="index.html#camping" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">ลานกางเต็นท์</a>
+                <a href="index.html#contact" class="mobile-link block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">ติดต่อเรา</a>
+                <a href="ozone_blog.html" class="block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">รู้จักเรามากขึ้น</a>
+                <a href="ozone_events.html" class="block px-4 py-3 text-gray-700 hover:bg-forest-50 hover:text-forest-700 rounded-xl font-medium transition-colors">กิจกรรม</a>
+                <div class="grid grid-cols-2 gap-3 pt-4 border-t border-gray-100 mt-2">
+                <a href="ozone_menu.html" class="bg-forest-700 text-white text-center py-3 rounded-xl font-bold shadow-md active:bg-forest-900 transition-colors">สั่งอาหาร</a>
+                <a href="ozone_booking.html" class="bg-forest-700 text-white text-center py-3 rounded-xl font-bold shadow-md active:bg-forest-900 transition-colors">จองที่พัก</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+     <!-- Hero Section -->
+    <section class="relative h-[60vh] flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://69fb5211cfd1f3d55a378a41.imgix.net/ozonephrae/IMG_9095ss.jpg?w=1500&h=607&auto=format%2Cenhance%2Ccompress%2Credeye" alt="Activities Background" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 hero-overlay"></div>
+        </div>
+        
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto mt-16">
+             <h1 class="text-5xl md:text-7xl font-heading font-bold text-gray-200 mb-8 leading-tight">บันทึกการเดินทาง<br>และเรื่องราวในสวนสีเขียว</h1>
+        
+            <p class="text-lg md:text-xl text-forest-50 font-light tracking-wide">
+                ค้นพบความสุขง่ายๆ ในการใช้ชีวิตท่ามกลางธรรมชาติ เกร็ดความรู้เรื่องกาแฟ และสถานที่ท่องเที่ยวที่คุณห้ามพลาดในจังหวัดแพร่
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section id="blog-section" class="py-20 max-w-7xl mx-auto px-6 lg:px-8">
+        
+        <!-- Search & Filters -->
+       
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-16">
+            <div class="flex items-center space-x-2 overflow-x-auto pb-4 w-full md:w-auto" id="category-tabs">
+                <button onclick="filterPosts('ทั้งหมด')" class="cat-tab active whitespace-nowrap px-8 py-3 rounded-full bg-forest-700 text-white font-bold text-x transition-all shadow-xl shadow-forest-500/20">ทั้งหมด</button>
+                <button onclick="filterPosts('ท่องเที่ยว')" class="cat-tab whitespace-nowrap px-8 py-3 rounded-full bg-gray-50 text-gray-500 hover:bg-forest-50 hover:text-forest-700 font-bold text-x transition-all">ท่องเที่ยว</button>
+                <button onclick="filterPosts('คาเฟ่ & กาแฟ')" class="cat-tab whitespace-nowrap px-8 py-3 rounded-full bg-gray-50 text-gray-500 hover:bg-forest-50 hover:text-forest-700 font-bold text-x transition-all">คาเฟ่ & กาแฟ</button>
+                <button onclick="filterPosts('แคมป์ปิ้ง')" class="cat-tab whitespace-nowrap px-8 py-3 rounded-full bg-gray-50 text-gray-500 hover:bg-forest-50 hover:text-forest-700 font-bold text-x transition-all">แคมป์ปิ้ง</button>
+            </div>
+    
+            <div class="relative w-full md:w-80 group">
+                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-forest-500 transition-colors"></i>
+                <input type="text" id="search-input" onkeyup="searchPosts()" placeholder="ค้นหาเรื่องราว..." class="w-full pl-14 pr-6 py-4 bg-white border border-gray-100 rounded-3xl focus:ring-8 focus:ring-forest-500/5 focus:border-forest-500 outline-none transition-all shadow-sm">
+            </div>
+        </div>
+
+        <!-- Grid -->
+        <div id="posts-grid" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            <div class="col-span-full py-32 text-center text-gray-300">
+                <i class="fa-solid fa-leaf fa-spin text-5xl mb-6 text-forest-100"></i>
+                <p class="font-medium tracking-widest uppercase text-xs">กำลังเตรียมบทความที่น่าสนใจให้คุณ...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🌟 Premium Article Modal 🌟 -->
+    <div id="article-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto bg-white custom-scrollbar">
+        <!-- Close Button (Fixed Top Right) -->
+        <button onclick="closeArticle()" class="fixed top-8 right-8 z-[110] w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-gray-900 hover:bg-forest-700 hover:text-white transition-all shadow-2xl">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+
+        <div class="animate-modal">
+            <!-- Full Width Header Image -->
+            <div class="relative h-[60vh] md:h-[75vh] w-full overflow-hidden">
+                <img id="modal-img" src="" class="w-full h-full object-cover" alt="Hero">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-white"></div>
+                <div class="absolute bottom-0 left-0 w-full p-8 md:p-20 text-center">
+                    <span id="modal-cat" class="px-5 py-2 rounded-full bg-forest-700 text-white text-[10px] font-bold uppercase tracking-[0.2em] mb-6 inline-block shadow-xl">Category</span>
+                    <h2 id="modal-title" class="text-4xl md:text-7xl font-heading font-bold text-gray-900 mb-6 leading-tight drop-shadow-sm">Article Title</h2>
+                </div>
+            </div>
+
+            <article class="max-w-4xl mx-auto px-6 py-12 md:py-20">
+                <!-- Meta Info & Share -->
+                <div class="flex flex-col md:flex-row items-center justify-between border-b border-gray-100 pb-10 mb-12 gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-forest-100 flex items-center justify-center text-forest-700 font-bold">OP</div>
+                        <div class="text-left">
+                            <p class="text-sm font-bold text-gray-900">Ozone Phrae Team</p>
+                            <p id="modal-date" class="text-xs text-gray-400 font-medium uppercase tracking-wider">Date</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-8 text-gray-400 text-xs font-bold uppercase tracking-widest">
+                        <span id="modal-reading-time"><i class="fa-regular fa-clock mr-2 text-forest-500"></i> 5 MIN READ</span>
+                        <div class="flex gap-4 border-l border-gray-100 pl-8">
+                            <!-- Social Share Buttons -->
+                            <button onclick="shareToFacebook()" title="แชร์ลง Facebook" class="hover:text-blue-600 transition-colors"><i class="fa-brands fa-facebook-f"></i></button>
+                            <button onclick="shareToLine()" title="แชร์ลง Line" class="hover:text-green-500 transition-colors"><i class="fa-brands fa-line"></i></button>
+                            <button onclick="copyToClipboard(event)" title="คัดลอกลิงก์" class="hover:text-forest-700 transition-colors"><i class="fa-solid fa-link"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Body (Now includes integrated gallery images) -->
+                <div class="article-content text-xl md:text-2xl font-light mb-20 whitespace-pre-wrap" id="modal-content">
+                    <!-- Text and images content injected here -->
+                </div>
+
+                <!-- Footer Sign-off -->
+                <div class="mt-32 p-12 bg-forest-50 rounded-[3rem] text-center">
+                    <i class="fa-solid fa-quote-left text-4xl text-forest-200 mb-6"></i>
+                    <h5 class="text-xl font-heading font-bold text-forest-900 mb-2">ขอบคุณที่ร่วมเดินทางไปกับเรา</h5>
+                    <p class="text-forest-700 font-light italic">"ธรรมชาติคือยารักษาใจที่ดีที่สุด... มาสูดโอโซนให้เต็มปอดที่แพร่นะครับ"</p>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Toast Notification (For Copy Link) -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl opacity-0 translate-y-10 transition-all duration-300 pointer-events-none">
+        คัดลอกลิงก์บทความเรียบร้อยแล้ว!
+    </div>
+
+ <!-- Footer (Standard from Index) -->
+    <footer class="bg-forest-900 text-forest-100 py-12 border-t border-forest-800 text-center">
+        <div class="max-w-7xl mx-auto px-4 mb-8">
+            <div class="flex items-center justify-center gap-2 mb-6">
+                <i class="fa-solid fa-leaf text-forest-500 text-3xl"></i>
+                <span class="font-heading font-bold text-2xl text-white tracking-wide">OZONE<span class="text-forest-500">PHRAE</span></span>
+            </div>
+            <div class="flex justify-center gap-8 mb-8 text-sm">
+                <a href="#" class="hover:text-white transition-colors">Facebook</a>
+                <a href="#" class="hover:text-white transition-colors">Instagram</a>
+                <a href="#" class="hover:text-white transition-colors">TikTok</a>
+                <a href="#" class="hover:text-white transition-colors">Line Official</a>
+            </div>
+        </div>
+        <p class="text-forest-700 text-xs tracking-widest uppercase">© 2024 Ozone Phrae Cafe & Camping. All rights reserved.</p>
+        <div class="mt-4">
+            <a href="ozone_admin_login.html" class="inline-block bg-forest-800 text-forest-400 px-4 py-1 rounded-full text-[10px] hover:text-white transition-all uppercase font-bold tracking-tighter">Admin Access</a>
+        </div>
+    </footer>
+
+    <script>
+        const API_URL = 'api.php';
+        let allPosts = [];
+        let filteredPosts = [];
+        let currentPostId = null;
+
+        async function loadPosts() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                if (data.status === 'error') throw new Error(data.message);
+                
+                allPosts = data;
+                filteredPosts = data;
+                displayPosts();
+
+                // Check for Post ID in URL (Deep Linking)
+                const urlParams = new URLSearchParams(window.location.search);
+                const postId = urlParams.get('post');
+                if (postId) {
+                    viewArticle(postId);
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                document.getElementById('posts-grid').innerHTML = `<div class="col-span-full py-40 text-center text-red-300 font-bold uppercase tracking-widest text-xs">ไม่สามารถดึงข้อมูลได้ในขณะนี้</div>`;
+            }
+        }
+
+        function displayPosts() {
+            const grid = document.getElementById('posts-grid');
+            if (filteredPosts.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-40 text-center text-gray-300 italic font-light">ไม่พบบทความที่คุณกำลังมองหา</div>`;
+                return;
+            }
+
+            grid.innerHTML = filteredPosts.map(post => {
+                const readingTime = Math.ceil((post.excerpt?.length || 0) / 150) + 1;
+                const formattedDate = new Date(post.created_at).toLocaleDateString('th-TH', { month: 'long', day: 'numeric', year: 'numeric' });
+                
+                return `
+                <article class="article-card flex flex-col h-full cursor-pointer group" onclick="viewArticle(${post.id})">
+                    <div class="relative h-[450px] rounded-[3rem] overflow-hidden mb-8 shadow-sm group-hover:shadow-2xl transition-all duration-700 ease-out">
+                        <img src="${post.image_url}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" onerror="this.src='https://via.placeholder.com/150'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
+                        <div class="absolute top-8 left-8 px-5 py-2 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-bold text-forest-900 uppercase tracking-[0.2em] shadow-xl">
+                            ${post.category}
+                        </div>
+                    </div>
+                    <div class="px-4 flex-grow">
+                        <div class="flex items-center gap-4 text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-4">
+                            <span>${formattedDate}</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-forest-100"></span>
+                            <span>${readingTime} MIN READ</span>
+                        </div>
+                        <h3 class="text-3xl font-heading font-bold text-gray-900 mb-6 group-hover:text-forest-700 transition-colors leading-tight line-clamp-2">
+                            ${post.title}
+                        </h3>
+                        <p class="text-gray-500 text-base leading-loose line-clamp-3 mb-10 font-light italic">
+                            ${post.excerpt || 'กดเพื่อสัมผัสเรื่องราวที่น่าสนใจเพิ่มเติมจากโอโซนแพร่'}
+                        </p>
+                    </div>
+                    <div class="px-4 pb-6 mt-auto">
+                        <span class="text-[11px] font-black text-forest-700 uppercase tracking-[0.3em] flex items-center gap-4 group-hover:translate-x-4 transition-all duration-500">
+                            READ ARTICLE <div class="h-[1px] w-12 bg-forest-700"></div>
+                        </span>
+                    </div>
+                </article>
+                `;
+            }).join('');
+        }
+
+        function filterPosts(category) {
+            document.querySelectorAll('.cat-tab').forEach(btn => {
+                btn.classList.remove('bg-forest-700', 'text-white', 'shadow-xl', 'shadow-forest-500/20', 'active');
+                btn.classList.add('bg-gray-50', 'text-gray-500');
+            });
+            event.target.classList.remove('bg-gray-50', 'text-gray-500');
+            event.target.classList.add('bg-forest-700', 'text-white', 'shadow-xl', 'shadow-forest-500/20', 'active');
+
+            filteredPosts = category === 'ทั้งหมด' ? allPosts : allPosts.filter(p => p.category === category);
+            displayPosts();
+        }
+
+        function searchPosts() {
+            const term = document.getElementById('search-input').value.toLowerCase();
+            filteredPosts = allPosts.filter(p => p.title.toLowerCase().includes(term) || p.excerpt.toLowerCase().includes(term));
+            displayPosts();
+        }
+
+        function viewArticle(id) {
+            const post = allPosts.find(p => p.id == id);
+            if (!post) return;
+
+            currentPostId = id;
+            const readingTime = Math.ceil((post.excerpt?.length || 0) / 150) + 1;
+            const formattedDate = new Date(post.created_at).toLocaleDateString('th-TH', { month: 'long', day: 'numeric', year: 'numeric' });
+
+            document.getElementById('modal-img').src = post.image_url;
+            document.getElementById('modal-title').innerText = post.title;
+            document.getElementById('modal-cat').innerText = post.category;
+            document.getElementById('modal-date').innerText = formattedDate;
+            document.getElementById('modal-reading-time').innerHTML = `<i class="fa-regular fa-clock mr-2 text-forest-500"></i> ${readingTime} MIN READ`;
+
+            // Prepare content area with integrated images
+            const contentArea = document.getElementById('modal-content');
+            let contentHtml = `<p class="mb-10">${post.excerpt}</p>`;
+
+            // Integrated Gallery Images within the content flow
+            if (post.gallery && post.gallery.length > 0) {
+                post.gallery.forEach((url, index) => {
+                    contentHtml += `
+                        <figure class="my-12 animate-modal" style="animation-delay: ${0.1 * (index + 1)}s">
+                            <img src="${url}" class="w-full h-auto rounded-[2.5rem] shadow-xl border border-gray-50" onerror="this.style.display='none'">
+                        </figure>
+                    `;
+                });
+            }
+
+            contentArea.innerHTML = contentHtml;
+            
+            const modal = document.getElementById('article-modal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            modal.scrollTop = 0;
+            updateReadingProgress();
+
+            // Update URL for sharing
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?post=' + id;
+            window.history.pushState({path: newUrl}, '', newUrl);
+        }
+
+        function closeArticle() {
+            document.getElementById('article-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('reading-progress-bar').style.width = '0%';
+            currentPostId = null;
+
+            // Restore URL
+            const restoreUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.pushState({path: restoreUrl}, '', restoreUrl);
+        }
+
+        function updateReadingProgress() {
+            const modal = document.getElementById('article-modal');
+            modal.onscroll = () => {
+                const winScroll = modal.scrollTop;
+                const height = modal.scrollHeight - modal.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                document.getElementById('reading-progress-bar').style.width = scrolled + "%";
+            };
+        }
+
+        // --- Social Share Functions ---
+        function shareToFacebook() {
+            const shareUrl = window.location.href;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+        }
+
+        function shareToLine() {
+            const shareUrl = window.location.href;
+            window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+        }
+
+        function copyToClipboard(event) {
+            const shareUrl = window.location.href;
+            const tempInput = document.createElement('input');
+            document.body.appendChild(tempInput);
+            tempInput.value = shareUrl;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            // Show Toast
+            const toast = document.getElementById('toast');
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 3000);
+        }
+
+        window.onload = loadPosts;
+        
+    </script>
+
+     <!-- Scripts: ระบบ Mobile Menu และ Carousel -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          // Mobile Menu Control
+            const mobileBtn = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+
+            mobileBtn.addEventListener('click', () => {
+                const isOpen = mobileMenu.classList.contains('active');
+                
+                if (!isOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    // Small delay to trigger animation
+                    setTimeout(() => mobileMenu.classList.add('active'), 10);
+                    menuIcon.classList.replace('fa-bars', 'fa-xmark');
+                } else {
+                    mobileMenu.classList.remove('active');
+                    // Wait for transition then hide
+                    setTimeout(() => mobileMenu.classList.add('hidden'), 300);
+                    menuIcon.classList.replace('fa-xmark', 'fa-bars');
+                }
+            });
+
+
+            // ปิดเมนูอัตโนมัติเมื่อมีการกด Link ภายในหน้าเดียวกัน
+            const menuLinks = document.querySelectorAll('.mobile-link');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    setTimeout(() => mobileMenu.classList.add('hidden'), 300);
+                    menuIcon.classList.replace('fa-xmark', 'fa-bars');
+                });
+            });
+
+            // --- 2. ระบบ Carousel (สำหรับลานกางเต็นท์) ---
+            const track = document.getElementById('carousel-track');
+            const slides = Array.from(track.children);
+            const prevBtn = document.getElementById('prev-slide');
+            const nextBtn = document.getElementById('next-slide');
+            let currentIndex = 0;
+
+            const updateCarousel = () => {
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            };
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % slides.length;
+                updateCarousel();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                updateCarousel();
+            });
+
+            // Auto Play เลื่อนรูปทุก 5 วินาที
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % slides.length;
+                updateCarousel();
+            }, 5000);
+        });
+
+        // Effect Navbar เปลี่ยนเงาเมื่อมีการ Scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-2', 'shadow-lg');
+            } else {
+                nav.classList.remove('py-2', 'shadow-lg');
+            }
+        });
+    </script>
+</body>
+</html>
+
+</body>
+</html>

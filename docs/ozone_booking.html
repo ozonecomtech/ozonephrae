@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YDZMQ8DYV9"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YDZMQ8DYV9');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จองที่พัก | Ozone Phrae Cafe & Camping</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Kanit', 'sans-serif'],
+                        heading: ['Prompt', 'sans-serif']
+                    },
+                    colors: { 
+                        forest: { 50: '#f0fdf4', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d' } 
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; }
+        .booking-card { 
+            @apply bg-white rounded-[2.5rem] overflow-hidden border border-slate-200/60 shadow-sm transition-all duration-500 ease-out; 
+            box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.05);
+        }
+        .booking-card:hover { 
+            @apply -translate-y-3;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        }
+        .form-label { @apply text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-2 mb-2 block; }
+        .form-input { 
+            @apply w-full bg-slate-50 border-2 border-transparent rounded-2xl px-6 py-4 outline-none text-slate-800 font-medium transition-all;
+            @apply focus:border-forest-600 focus:bg-white focus:ring-8 focus:ring-forest-600/5;
+            font-size: 16px;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        @keyframes modalSlideUp { 
+            from { opacity: 0; transform: translateY(30px) scale(0.98); } 
+            to { opacity: 1; transform: translateY(0) scale(1); } 
+        }
+        .animate-modal { animation: modalSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .glass-nav { @apply bg-white/90 backdrop-blur-xl border-b border-slate-200/50; }
+        .main-gutter { @apply px-6 md:px-12 lg:px-20; }
+        .section-spacing { @apply py-20 md:py-32; }
+
+        #mobile-menu {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        #mobile-menu.active {
+            max-height: 100vh;
+            opacity: 1;
+            padding-bottom: 1.5rem;
+        }
+        
+        .highlight-item { @apply flex items-center gap-3 bg-slate-50 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 transition-all border border-slate-100; }
+    </style>
+</head>
+<body class="text-slate-800 custom-scrollbar pt-20">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-nav">
+        <div class="max-w-[1400px] mx-auto h-20 md:h-24 flex items-center justify-between px-6 md:px-8">
+            <a href="index.html" class="flex items-center gap-3 md:gap-4 group">
+                <div class="w-10 h-10 md:w-11 md:h-11 bg-forest-700 rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-forest-900/20 rotate-3 transition-transform group-hover:rotate-12">
+                    <i class="fa-solid fa-leaf text-base md:text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-heading font-bold text-slate-900 uppercase tracking-tighter leading-none">Ozone <span class="text-forest-600">Phrae</span></h1>
+                    <p class="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Booking Experience</p>
+                </div>
+            </a>
+
+            <div class="hidden md:flex items-center gap-6">
+                <a href="index.html" class="text-[11px] font-bold text-slate-500 hover:text-forest-700 transition-all uppercase tracking-widest">กลับหน้าหลัก</a>
+                <a href="ozone_Booking_Tracker.html" class="bg-forest-700 text-white px-6 py-2.5 rounded-full hover:bg-forest-900 transition-all shadow-md text-[11px] font-bold uppercase tracking-widest active:scale-95">
+                    <i class="fa-solid fa-magnifying-glass mr-2"></i> สถานะการจอง
+                </a>
+            </div>
+
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="w-10 h-10 flex items-center justify-center text-slate-600">
+                    <i class="fa-solid fa-bars-staggered text-2xl" id="menu-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden bg-white/95 border-b border-slate-100 hidden">
+            <div class="px-6 py-4 space-y-3">
+                <a href="index.html" class="block w-full text-left px-4 py-3 text-slate-600 font-bold text-sm uppercase tracking-widest hover:bg-slate-50 rounded-xl">
+                    <i class="fa-solid fa-house mr-3 text-forest-600"></i> กลับหน้าหลัก
+                </a>
+                <a href="ozone_Booking_Tracker.html" class="block w-full bg-forest-700 text-white px-4 py-4 rounded-2xl font-bold text-center text-sm uppercase tracking-widest shadow-lg active:scale-[0.98]">
+                    <i class="fa-solid fa-magnifying-glass mr-2"></i> ตรวจสอบสถานะการจอง
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-[1400px] mx-auto section-spacing main-gutter">
+        <div class="mb-14 md:mb-20 text-center max-w-3xl mx-auto animate-modal">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-forest-50 text-forest-700 text-[10px] font-black uppercase tracking-[0.2em] mb-6">Reservation System</span>
+            <h3 class="text-4xl md:text-6xl font-heading font-black text-slate-900 mb-6 tracking-tight leading-[1.1]">จองที่พักและลานกางเต็นท์</h3>
+            <p class="text-base md:text-lg text-slate-400 font-medium leading-relaxed italic">
+                สัมผัสความเงียบสงบในสวนเกษตรอินทรีย์ <br class="hidden md:block"> ลานกางเต็นท์ 150.-/คน | บ้านพักราคาเหมา
+            </p>
+        </div>
+
+        <div id="room-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-14">
+            <div class="col-span-full text-center py-40 flex flex-col items-center gap-6">
+                <div class="w-16 h-16 border-4 border-forest-100 border-t-forest-600 rounded-full animate-spin"></div>
+                <p class="font-bold uppercase tracking-[0.3em] text-xs text-slate-300">Synchronizing with system...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4 md:p-6">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-xl" onclick="closeDetail()"></div>
+        
+        <div class="relative bg-white w-full max-w-5xl rounded-[2rem] md:rounded-[3rem] shadow-2xl overflow-hidden animate-modal flex flex-col md:flex-row max-h-[92vh]">
+            
+            <!-- Left: Image Section -->
+            <div class="relative w-full md:w-5/12 lg:w-1/2 h-64 sm:h-80 md:h-auto shrink-0 bg-slate-100">
+                <img id="detail-img" src="" class="absolute inset-0 w-full h-full object-cover" alt="Room View">
+                
+                <!-- Gallery Navigation -->
+                <button id="prev-img-btn" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/70 backdrop-blur shadow-md rounded-full flex items-center justify-center text-slate-800 hover:bg-white hover:scale-105 transition-all z-10 hidden" onclick="prevGalleryImage()">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button id="next-img-btn" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/70 backdrop-blur shadow-md rounded-full flex items-center justify-center text-slate-800 hover:bg-white hover:scale-105 transition-all z-10 hidden" onclick="nextGalleryImage()">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+                <button onclick="closeDetail()" class="absolute top-4 left-4 w-10 h-10 bg-slate-900/40 backdrop-blur-md rounded-full flex items-center justify-center text-white md:hidden z-10">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                
+                <div class="absolute bottom-4 left-4 z-10">
+                     <span id="detail-badge" class="bg-forest-600/90 backdrop-blur text-white px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest shadow-lg">ROOM</span>
+                </div>
+            </div>
+
+            <!-- Right: Content Section -->
+            <div class="w-full md:w-7/12 lg:w-1/2 flex flex-col max-h-[calc(92vh-16rem)] sm:max-h-[calc(92vh-20rem)] md:max-h-[92vh] bg-white">
+                <div class="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
+                    <div class="hidden md:flex justify-end mb-4">
+                        <button onclick="closeDetail()" class="w-10 h-10 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center hover:bg-slate-100 hover:text-slate-900 transition-all">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+                    
+                    <h3 id="detail-title" class="text-2xl md:text-4xl font-heading font-black text-slate-900 tracking-tight leading-tight">Room Name</h3>
+                    <p id="detail-capacity" class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2 mb-4">สูงสุด 2 ท่าน</p>
+                    <p id="detail-desc" class="text-sm md:text-base text-slate-500 leading-relaxed mb-8">Description...</p>
+                    
+                    <div class="mb-8">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-3">สิ่งอำนวยความสะดวก</label>
+                        <div id="detail-highlights" class="grid grid-cols-2 gap-3"></div>
+                    </div>
+
+                    <div id="detail-gallery-container" class="mb-4 hidden">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest block mb-3">รูปภาพเพิ่มเติม</label>
+                        <div id="detail-gallery" class="flex gap-2 overflow-x-auto custom-scrollbar pb-3"></div>
+                    </div>
+                </div>
+
+                <!-- Sticky Bottom CTA -->
+                <div class="shrink-0 p-6 md:p-8 border-t border-slate-100 bg-white shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">ราคาเริ่มต้น</p>
+                            <p id="detail-price-label" class="text-2xl md:text-3xl font-black text-forest-700 tracking-tighter leading-none">฿150 / ท่าน</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">มัดจำ</p>
+                            <p id="detail-deposit" class="text-lg font-bold text-slate-900 leading-none">฿100.00</p>
+                        </div>
+                    </div>
+                    <button id="detail-book-btn" class="w-full bg-slate-900 hover:bg-forest-700 text-white font-black py-4 md:py-5 rounded-2xl shadow-xl transition-all active:scale-95 flex justify-center items-center gap-3 text-base uppercase tracking-widest">
+                        จองห้องพักนี้ <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Form Modal -->
+    <div id="booking-modal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4 md:p-6">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="closeModal()"></div>
+        <div class="relative bg-white w-full max-w-2xl rounded-[3rem] md:rounded-[4rem] shadow-2xl p-8 md:p-16 animate-modal max-h-[92vh] overflow-y-auto custom-scrollbar">
+            <div class="flex justify-between items-start mb-8 md:mb-12">
+                <div>
+                    <h3 id="modal-room-name" class="text-3xl md:text-4xl font-heading font-black text-slate-900 tracking-tight leading-none mb-3">จองที่พัก</h3>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-forest-500 animate-pulse"></span>
+                        <p class="text-[10px] text-forest-600 font-bold uppercase tracking-widest">Ozone Phrae Premium Booking</p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-slate-50 text-slate-400 hover:text-slate-900 flex items-center justify-center shadow-inner">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="submitBooking(event)" class="space-y-8 md:space-y-10">
+                <input type="hidden" id="room-id">
+                <input type="hidden" id="room-type">
+                <input type="hidden" id="room-base-price">
+                <input type="hidden" id="room-deposit-amount">
+
+                <div class="bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label class="form-label">วันที่เช็คอิน</label><input type="date" id="check-in" required class="form-input"></div>
+                        <div><label class="form-label">วันที่เช็คเอาท์</label><input type="date" id="check-out" required class="form-input"></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label class="form-label">ชื่อ-นามสกุล ผู้จอง</label><input type="text" id="guest-name" required class="form-input" placeholder="ระบุชื่อจริง"></div>
+                    <div><label class="form-label">เบอร์โทรศัพท์</label><input type="tel" id="guest-phone" required class="form-input" placeholder="08x-xxx-xxxx"></div>
+                    <div>
+                        <label class="form-label">มาจากจังหวัด</label>
+                        <select id="guest-province" required class="form-input">
+                            <option value="" disabled selected>-- เลือกจังหวัด --</option>
+                            <option value="กระบี่">กระบี่</option><option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option><option value="กาญจนบุรี">กาญจนบุรี</option><option value="กาฬสินธุ์">กาฬสินธุ์</option><option value="กำแพงเพชร">กำแพงเพชร</option><option value="ขอนแก่น">ขอนแก่น</option><option value="จันทบุรี">จันทบุรี</option><option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option><option value="ชลบุรี">ชลบุรี</option><option value="ชัยนาท">ชัยนาท</option><option value="ชัยภูมิ">ชัยภูมิ</option><option value="ชุมพร">ชุมพร</option><option value="เชียงราย">เชียงราย</option><option value="เชียงใหม่">เชียงใหม่</option><option value="ตรัง">ตรัง</option><option value="ตราด">ตราด</option><option value="ตาก">ตาก</option><option value="นครนายก">นครนายก</option><option value="นครปฐม">นครปฐม</option><option value="นครพนม">นครพนม</option><option value="นครราชสีมา">นครราชสีมา</option><option value="นครศรีธรรมราช">นครศรีธรรมราช</option><option value="นครสวรรค์">นครสวรรค์</option><option value="นนทบุรี">นนทบุรี</option><option value="นราธิวาส">นราธิวาส</option><option value="น่าน">น่าน</option><option value="บึงกาฬ">บึงกาฬ</option><option value="บุรีรัมย์">บุรีรัมย์</option><option value="ปทุมธานี">ปทุมธานี</option><option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option><option value="ปราจีนบุรี">ปราจีนบุรี</option><option value="ปัตตานี">ปัตตานี</option><option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option><option value="พะเยา">พะเยา</option><option value="พังงา">พังงา</option><option value="พัทลุง">พัทลุง</option><option value="พิจิตร">พิจิตร</option><option value="พิษณุโลก">พิษณุโลก</option><option value="เพชรบุรี">เพชรบุรี</option><option value="เพชรบูรณ์">เพชรบูรณ์</option><option value="แพร่">แพร่</option><option value="ภูเก็ต">ภูเก็ต</option><option value="มหาสารคาม">มหาสารคาม</option><option value="มุกดาหาร">มุกดาหาร</option><option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option><option value="ยโสธร">ยโสธร</option><option value="ยะลา">ยะลา</option><option value="ร้อยเอ็ด">ร้อยเอ็ด</option><option value="ระนอง">ระนอง</option><option value="ระยอง">ระยอง</option><option value="ราชบุรี">ราชบุรี</option><option value="ลพบุรี">ลพบุรี</option><option value="ลำปาง">ลำปาง</option><option value="ลำพูน">ลำพูน</option><option value="เลย">เลย</option><option value="ศรีสะเกษ">ศรีสะเกษ</option><option value="สกลนคร">สกลนคร</option><option value="สงขลา">สงขลา</option><option value="สตูล">สตูล</option><option value="สมุทรปราการ">สมุทรปราการ</option><option value="สมุทรสงคราม">สมุทรสงคราม</option><option value="สมุทรสาคร">สมุทรสาคร</option><option value="สระแก้ว">สระแก้ว</option><option value="สระบุรี">สระบุรี</option><option value="สิงห์บุรี">สิงห์บุรี</option><option value="สุโขทัย">สุโขทัย</option><option value="สุพรรณบุรี">สุพรรณบุรี</option><option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option><option value="สุรินทร์">สุรินทร์</option><option value="หนองคาย">หนองคาย</option><option value="หนองบัวลำภู">หนองบัวลำภู</option><option value="อ่างทอง">อ่างทอง</option><option value="อำนาจเจริญ">อำนาจเจริญ</option><option value="อุดรธานี">อุดรธานี</option><option value="อุตรดิตถ์">อุตรดิตถ์</option><option value="อุทัยธานี">อุทัยธานี</option><option value="อุบลราชธานี">อุบลราชธานี</option>
+                        </select>
+                    </div>
+                    <div><label class="form-label">จำนวนผู้เข้าพัก (คน)</label><input type="number" id="guest-count" min="1" required class="form-input"></div>
+                </div>
+                <div><label class="form-label">คำขอพิเศษ</label><textarea id="guest-comment" class="form-input h-32 resize-none pt-5"></textarea></div>
+                <button type="submit" id="submit-btn" class="w-full bg-slate-950 hover:bg-forest-700 text-white font-black py-5 rounded-[2.5rem] shadow-2xl flex justify-center items-center gap-4 text-xl tracking-tight uppercase transition-all">
+                    <span>ยืนยันการจองที่พัก</span><i class="fa-solid fa-arrow-right-long"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-2xl"></div>
+        <div class="relative bg-white w-full max-w-5xl max-h-[92vh] overflow-y-auto custom-scrollbar rounded-[3rem] shadow-2xl p-8 md:p-20 animate-modal text-center">
+            <div class="w-24 h-24 bg-forest-50 text-forest-600 rounded-[2.5rem] flex items-center justify-center mb-8 mx-auto text-4xl shadow-inner border border-forest-100"><i class="fa-solid fa-check"></i></div>
+            <h3 class="text-4xl md:text-5xl font-heading font-black text-slate-900 mb-4 tracking-tighter">จองสำเร็จ!</h3>
+            <p id="success-deposit-text" class="text-slate-400 mb-12 font-medium italic">กรุณาชำระมัดจำ และส่งหลักฐานที่ LINE: @ozonephrae</p>
+            <div class="bg-forest-900 text-white p-10 rounded-[4rem] shadow-2xl inline-block max-w-md w-full">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=0871766551" class="w-56 h-56 mx-auto rounded-3xl bg-white p-4 mb-8">
+                <p class="text-2xl font-black tracking-widest uppercase">PromptPay</p>
+                <p class="text-sm font-medium text-forest-200">087-176-xxxx / นาย วิจิตรกร ขึมจันทร์</p>
+            </div>
+            <button onclick="window.location.reload()" class="w-full mt-12 bg-slate-900 text-white font-black py-6 rounded-[2.5rem] uppercase tracking-widest text-lg">กลับสู่หน้าหลัก</button>
+        </div>
+    </div>
+
+    <script>
+        const API = 'api_booking.php';
+        let roomsData = [];
+        let currentGalleryImages = [];
+        let currentGalleryIndex = 0;
+
+        // Mobile Menu
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                setTimeout(() => menu.classList.add('active'), 10);
+                icon.classList.replace('fa-bars-staggered', 'fa-xmark');
+            } else {
+                menu.classList.remove('active');
+                setTimeout(() => menu.classList.add('hidden'), 300);
+                icon.classList.replace('fa-xmark', 'fa-bars-staggered');
+            }
+        });
+
+        async function fetchRooms() {
+            try {
+                const res = await fetch(API);
+                roomsData = await res.json();
+                const grid = document.getElementById('room-grid');
+                if (!roomsData || roomsData.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full text-center py-40 text-slate-300 italic">ไม่พบบ้านพักหรือลานว่างในขณะนี้</div>`;
+                    return;
+                }
+                grid.innerHTML = roomsData.map((room, idx) => {
+                    const price = parseFloat(room.price);
+                    const isCamping = room.type === 'Tent' || room.name.includes('ลานกางเต็นท์');
+                    const priceLabel = isCamping ? '฿150 / ท่าน' : `฿${price.toLocaleString()} / หลัง`;
+                    return `
+                        <div class="booking-card group" style="animation: modalSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.1}s forwards; opacity: 0;">
+                            <div class="relative h-60 md:h-72 overflow-hidden">
+                                <img src="${room.image_url}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" onerror="this.src='https://via.placeholder.com/800x600?text=Ozone+Phrae'">
+                                <div class="absolute top-6 left-6"><span class="bg-white/95 backdrop-blur-md px-5 py-2 rounded-2xl text-[10px] font-black text-forest-700 uppercase tracking-widest shadow-xl border border-forest-50/50">${room.type}</span></div>
+                            </div>
+                            <div class="p-8 md:p-10">
+                                <div class="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
+                                    <div><h4 class="text-xl md:text-2xl font-heading font-black text-slate-900 tracking-tight group-hover:text-forest-700 transition-colors">${room.name}</h4><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-4">สูงสุด ${room.capacity || 2} ท่าน</p></div>
+                                    <div class="md:text-right"><p class="text-xl md:text-2xl font-black text-forest-700 tracking-tighter">${priceLabel}</p></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="showDetail(${room.id})" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold py-4 rounded-2xl transition-all text-[11px] uppercase tracking-widest">ดูรายละเอียด</button>
+                                    <button onclick="openBooking(${room.id})" class="w-full bg-slate-950 hover:bg-forest-700 text-white font-black py-4 rounded-2xl transition-all shadow-xl text-[11px] uppercase tracking-widest">จองที่พัก</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        // 🌟 ปรับปรุงการแสดงผลรูปภาพและข้อมูลใน Modal 🌟
+        function showDetail(id) {
+            const room = roomsData.find(r => r.id == id);
+            if (!room) return;
+
+            const modal = document.getElementById('detail-modal');
+            
+            // เตรียม Array รูปภาพ (รองรับทั้ง JSON Array และ Newline String)
+            currentGalleryImages = [room.image_url];
+            if (room.gallery_images && room.gallery_images !== '') {
+                try {
+                    // ลอง Parse แบบ JSON
+                    const parsed = JSON.parse(room.gallery_images);
+                    if (Array.isArray(parsed)) {
+                        currentGalleryImages = currentGalleryImages.concat(parsed);
+                    }
+                } catch (e) {
+                    // ถ้าไม่ใช่ JSON ใช้การ split ด้วย newline (รองรับข้อมูลเก่า)
+                    const extraImgs = room.gallery_images.split('\n').map(s => s.trim()).filter(s => s !== '');
+                    currentGalleryImages = currentGalleryImages.concat(extraImgs);
+                }
+            }
+            currentGalleryIndex = 0;
+
+            document.getElementById('detail-title').innerText = room.name;
+            document.getElementById('detail-capacity').innerText = `พักสูงสุด ${room.capacity || 2} ท่าน`;
+            document.getElementById('detail-desc').innerText = room.description || 'สัมผัสการพักผ่อนท่ามกลางธรรมชาติในสวนโอโซนแพร่ บรรยากาศร่มรื่น เงียบสงบ เหมาะแก่การพักผ่อนอย่างแท้จริง';
+            document.getElementById('detail-badge').innerText = room.type;
+            
+            const isCamping = room.type === 'Tent' || room.name.includes('ลานกางเต็นท์');
+            document.getElementById('detail-price-label').innerText = isCamping ? '฿150 / ท่าน' : `฿${parseFloat(room.price).toLocaleString()} / หลัง`;
+            document.getElementById('detail-deposit').innerText = `฿${parseFloat(room.deposit_amount || 100).toLocaleString()}`;
+            
+            // สิ่งอำนวยความสะดวก
+            const highlights = document.getElementById('detail-highlights');
+            let htlm = '';
+            if (room.facilities && room.facilities.trim() !== '') {
+                room.facilities.split(',').forEach(fac => {
+                    let icon = 'fa-check-circle';
+                    let text = fac.trim();
+                    if(text.includes('แอร์')) icon = 'fa-snowflake';
+                    else if(text.includes('ทีวี')) icon = 'fa-tv';
+                    else if(text.includes('พัดลม')) icon = 'fa-fan';
+                    else if(text.includes('น้ำอุ่น')) icon = 'fa-bath';
+                    else if(text.includes('wifi')) icon = 'fa-wifi';
+                    else if(text.includes('เตียง')) icon = 'fa-bed';
+                    htlm += `<div class="highlight-item"><i class="fa-solid ${icon} text-forest-600 text-lg"></i> <span class="truncate">${text}</span></div>`;
+                });
+            } else {
+                htlm = isCamping ? 
+                    `<div class="highlight-item"><i class="fa-solid fa-plug text-forest-600 text-lg"></i> จุดพ่วงไฟฟ้า</div><div class="highlight-item"><i class="fa-solid fa-shower text-forest-600 text-lg"></i> ห้องน้ำรวม</div>` : 
+                    `<div class="highlight-item"><i class="fa-solid fa-bed text-forest-600 text-lg"></i> เตียงนุ่ม</div><div class="highlight-item"><i class="fa-solid fa-bath text-forest-600 text-lg"></i> ห้องน้ำในตัว</div>`;
+            }
+            highlights.innerHTML = htlm;
+
+            // Gallery Thumbnails
+            const galleryContainer = document.getElementById('detail-gallery-container');
+            const galleryInner = document.getElementById('detail-gallery');
+            if (currentGalleryImages.length > 1) {
+                galleryInner.innerHTML = currentGalleryImages.map((img, index) => 
+                    `<img src="${img}" onclick="setGalleryImage(${index})" class="gallery-thumb w-16 h-16 min-w-[4rem] object-cover rounded-xl cursor-pointer border-2 transition-all opacity-60 hover:opacity-100 ${index === 0 ? 'border-forest-600 opacity-100' : 'border-transparent'}" onerror="this.style.display='none'">`
+                ).join('');
+                galleryContainer.classList.remove('hidden');
+            } else {
+                galleryContainer.classList.add('hidden');
+            }
+
+            updateGalleryUI();
+
+            document.getElementById('detail-book-btn').onclick = () => { closeDetail(); openBooking(room.id); };
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function updateGalleryUI() {
+            document.getElementById('detail-img').src = currentGalleryImages[currentGalleryIndex];
+            const hasMultiple = currentGalleryImages.length > 1;
+            document.getElementById('prev-img-btn').style.display = hasMultiple ? 'flex' : 'none';
+            document.getElementById('next-img-btn').style.display = hasMultiple ? 'flex' : 'none';
+
+            if(hasMultiple) {
+                document.querySelectorAll('.gallery-thumb').forEach((el, idx) => {
+                    if(idx === currentGalleryIndex) {
+                        el.classList.add('border-forest-600', 'opacity-100');
+                        el.classList.remove('border-transparent', 'opacity-60');
+                        el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    } else {
+                        el.classList.add('border-transparent', 'opacity-60');
+                        el.classList.remove('border-forest-600', 'opacity-100');
+                    }
+                });
+            }
+        }
+
+        function prevGalleryImage() {
+            if(currentGalleryImages.length <= 1) return;
+            currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+            updateGalleryUI();
+        }
+
+        function nextGalleryImage() {
+            if(currentGalleryImages.length <= 1) return;
+            currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+            updateGalleryUI();
+        }
+
+        window.setGalleryImage = function(index) {
+            currentGalleryIndex = index;
+            updateGalleryUI();
+        }
+
+        function closeDetail() { document.getElementById('detail-modal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
+
+        function openBooking(id) {
+            const room = roomsData.find(r => r.id == id);
+            if (!room) return;
+            document.getElementById('room-id').value = room.id;
+            document.getElementById('room-type').value = room.type;
+            document.getElementById('room-base-price').value = room.price;
+            document.getElementById('room-deposit-amount').value = room.deposit_amount || 100;
+            document.getElementById('modal-room-name').innerText = room.name;
+            document.getElementById('booking-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() { document.getElementById('booking-modal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
+
+        async function submitBooking(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const cIn = document.getElementById('check-in').value;
+            const cOut = document.getElementById('check-out').value;
+            const guestCount = parseInt(document.getElementById('guest-count').value) || 1;
+            const roomType = document.getElementById('room-type').value;
+            const roomBasePrice = parseFloat(document.getElementById('room-base-price').value);
+            const depositAmount = parseFloat(document.getElementById('room-deposit-amount').value);
+
+            if (new Date(cOut) <= new Date(cIn)) { alert("วันที่เช็คเอาท์ต้องหลังจากเช็คอินครับ"); return; }
+            const diffDays = Math.ceil(Math.abs(new Date(cOut) - new Date(cIn)) / (1000 * 60 * 60 * 24)) || 1;
+            const totalPrice = (roomType === 'Tent' || document.getElementById('modal-room-name').innerText.includes('ลานกาง')) ? 
+                                (150 * guestCount * diffDays) : (roomBasePrice * diffDays);
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-3"></i> กำลังจอง...';
+                const payload = {
+                    room_id: document.getElementById('room-id').value,
+                    guest_name: document.getElementById('guest-name').value,
+                    guest_phone: document.getElementById('guest-phone').value,
+                    guest_province: document.getElementById('guest-province').value,
+                    guest_count: guestCount,
+                    comment: document.getElementById('guest-comment').value,
+                    check_in: cIn, check_out: cOut,
+                    total_price: totalPrice, deposit_amount: depositAmount
+                };
+                const res = await fetch(API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if(result.status === 'success') {
+                    document.getElementById('booking-modal').classList.add('hidden');
+                    document.getElementById('success-deposit-text').innerText = `กรุณาชำระมัดจำ ${depositAmount.toLocaleString()} บาท และส่งหลักฐานที่ LINE: @ozonephrae`;
+                    document.getElementById('success-modal').classList.remove('hidden');
+                } else { alert("Error: " + result.message); }
+            } catch (error) { alert("การเชื่อมต่อมีปัญหา กรุณาลองใหม่ครับ"); }
+            finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>ยืนยันการจองที่พัก</span> <i class="fa-solid fa-arrow-right-long"></i>';
+            }
+        }
+
+        window.onload = fetchRooms;
+    </script>
+</body>
+</html>

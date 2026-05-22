@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตรวจสอบสถานะการจอง | Ozone Phrae</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Kanit', 'sans-serif'],
+                        heading: ['Prompt', 'sans-serif']
+                    },
+                    colors: { 
+                        forest: { 50: '#f0fdf4', 600: '#16a34a', 700: '#15803d', 900: '#14532d' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; }
+        .search-container {
+            background: linear-gradient(135deg, #14532d 0%, #16a34a 100%);
+        }
+        .result-card {
+            animation: slideUp 0.4s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #16a34a;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-800 pb-10">
+
+    <!-- Header Section -->
+    <header class="search-container text-white pt-12 pb-24 px-6 rounded-b-[3rem] shadow-xl relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="w-full h-full">
+                <path d="M0,0 L100,0 L100,100 L0,100 Z" fill="currentColor"></path>
+            </svg>
+        </div>
+        
+        <div class="max-w-md mx-auto relative z-10 text-center">
+            <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <i class="fa-solid fa-calendar-check text-4xl text-white"></i>
+            </div>
+            <h1 class="text-3xl font-heading font-black mb-2">ตรวจสอบสถานะการจอง</h1>
+            <p class="text-forest-50 font-light opacity-90">กรอกข้อมูลเพื่อค้นหาข้อมูลการจองของคุณ</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-md mx-auto -mt-12 px-6 relative z-20">
+        <!-- Search Box -->
+        <div class="bg-white p-6 rounded-[2rem] shadow-xl mb-8">
+            <div class="relative mb-4">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-search text-slate-400"></i>
+                </div>
+                <input type="text" id="searchInput" 
+                    class="block w-full pl-12 pr-4 py-4 border-2 border-slate-100 rounded-2xl focus:border-forest-600 focus:ring-0 transition-all text-lg font-medium outline-none" 
+                    placeholder="ระบุชื่อ หรือ เบอร์โทรศัพท์">
+            </div>
+            <button onclick="handleSearch()" id="searchBtn"
+                class="w-full bg-forest-700 hover:bg-forest-900 text-white font-bold py-4 rounded-2xl shadow-lg shadow-forest-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                <span>ค้นหาข้อมูล</span>
+                <div id="btnLoader" class="loader hidden"></div>
+            </button>
+        </div>
+
+        <!-- Results Area -->
+        <div id="resultsArea" class="space-y-4">
+            <!-- Initial State Message -->
+            <div id="emptyState" class="text-center py-10">
+                <div class="text-slate-200 mb-4">
+                    <i class="fa-solid fa-clipboard-list text-6xl"></i>
+                </div>
+                <p class="text-slate-400 font-medium">รอการระบุข้อมูลเพื่อค้นหา...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 text-center px-6">
+        <p class="text-slate-400 text-xs uppercase tracking-widest font-bold">Ozone Phrae &middot; Booking System</p>
+    </footer>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyX_12QBnPKU6atdYtcHVBc1MApc9uFXBEGV-i6aheUJy7YOqAT60MhMxoLtYDZc5R-/exec';
+        
+        async function handleSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            const btn = document.getElementById('searchBtn');
+            const loader = document.getElementById('btnLoader');
+            const resultsArea = document.getElementById('resultsArea');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!query) {
+                alert('กรุณากรอกชื่อหรือเบอร์โทรศัพท์เพื่อค้นหา');
+                return;
+            }
+
+            // UI Loading State
+            btn.disabled = true;
+            loader.classList.remove('hidden');
+            btn.querySelector('span').innerText = 'กำลังค้นหา...';
+            resultsArea.innerHTML = '';
+
+            try {
+                // Fetch data from Google Sheets
+                // Note: Apps Script URL typically requires a GET request
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                // Assuming the data is an array under a key or the root
+                const bookings = Array.isArray(data) ? data : (data.Bookings || []);
+                
+                // Filter logic
+                const filtered = bookings.filter(item => {
+                    const name = String(item.ชื่อผู้จอง || item.Name || '').toLowerCase();
+                    const phone = String(item.เบอร์โทร || item.Phone || '');
+                    const searchTerm = query.toLowerCase();
+                    return name.includes(searchTerm) || phone.includes(searchTerm);
+                });
+
+                if (filtered.length > 0) {
+                    renderResults(filtered);
+                } else {
+                    resultsArea.innerHTML = `
+                        <div class="bg-white p-10 rounded-[2rem] shadow-md text-center">
+                            <div class="text-rose-500 mb-4"><i class="fa-solid fa-circle-exclamation text-5xl"></i></div>
+                            <h3 class="text-xl font-bold text-slate-800">ไม่พบข้อมูลการจอง</h3>
+                            <p class="text-slate-500 mt-2">ไม่พบรายการที่ตรงกับ "${query}" <br>กรุณาตรวจสอบความถูกต้องอีกครั้ง</p>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                resultsArea.innerHTML = `
+                    <div class="bg-rose-50 p-8 rounded-[2rem] border-2 border-rose-100 text-center">
+                        <p class="text-rose-600 font-bold">เกิดข้อผิดพลาดในการเชื่อมต่อข้อมูล</p>
+                        <p class="text-rose-400 text-sm mt-1">กรุณาลองใหม่อีกครั้งในภายหลัง</p>
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+                loader.classList.add('hidden');
+                btn.querySelector('span').innerText = 'ค้นหาข้อมูล';
+            }
+        }
+
+        function renderResults(list) {
+            const resultsArea = document.getElementById('resultsArea');
+            
+            const html = list.map(item => {
+                const name = item.ชื่อผู้จอง || item.Name || '-';
+                const phone = item.เบอร์โทร || item.Phone || '-';
+                const type = item.แบบที่พัก || item.Type || '-';
+                const checkIn = item.เช็คอินวันที่ || item.CheckIn || '-';
+                const status = item.สถานะ || item.Status || 'รอการยืนยัน';
+                
+                const statusStyles = getStatusStyles(status);
+
+                return `
+                    <div class="result-card bg-white rounded-[2rem] shadow-md overflow-hidden border border-slate-50 mb-4">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="${statusStyles.bg} ${statusStyles.text} px-4 py-1.5 rounded-full text-lg font-black uppercase tracking-widest">
+                                    ${status}
+                                </span>
+                                <div class="text-right">
+                                    <p class="text-[15px] text-slate-600 font-bold uppercase tracking-widest">วันที่เช็คอิน</p>
+                                    <p class="text-lg font-black text-slate-800">${formatDate(checkIn)}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <h3 class="text-2xl font-black text-slate-900">${name}</h3>
+                                    <p class="text-forest-600 font-bold flex items-center gap-2">
+                                        <i class="fa-solid fa-phone text-xs"></i> ${phone}
+                                    </p>
+                                </div>
+                                
+                                <div class="bg-slate-50 rounded-2xl p-4 flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-forest-700">
+                                        <i class="fa-solid fa-house-chimney text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ประเภทที่พัก</p>
+                                        <p class="text-slate-800 font-bold text-lg">${type}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            resultsArea.innerHTML = html;
+        }
+
+        function getStatusStyles(status) {
+            const s = status.toLowerCase();
+            if (s.includes('ยืนยัน') || s.includes('confirm') || s.includes('สำเร็จ')) {
+                return { bg: 'bg-emerald-100', text: 'text-emerald-700' };
+            } else if (s.includes('ยกเลิก') || s.includes('cancel')) {
+                return { bg: 'bg-rose-100', text: 'text-rose-700' };
+            } else if (s.includes('รอ') || s.includes('pending')) {
+                return { bg: 'bg-amber-100', text: 'text-amber-700' };
+            }
+            return { bg: 'bg-slate-100', text: 'text-slate-700' };
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr || dateStr === '-') return '-';
+            try {
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) return dateStr;
+                return date.toLocaleDateString('th-TH', { 
+                    day: 'numeric', 
+                    month: 'short', 
+                    year: '2-digit' 
+                });
+            } catch { return dateStr; }
+        }
+
+        // Allow searching with Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+    </script>
+</body>
+</html>

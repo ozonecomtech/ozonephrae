@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Menu | Ozone Admin</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Kanit', 'sans-serif'], heading: ['Prompt', 'sans-serif'] },
+                    colors: { forest: { 600: '#16a34a', 700: '#15803d', 900: '#14532d' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        .form-input { @apply w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-forest-600 transition-all text-sm; }
+        .btn-primary { @apply bg-forest-700 hover:bg-forest-900 text-white font-bold py-3 px-6 rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:scale-100; }
+        .btn-secondary { @apply bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold py-3 px-6 rounded-xl transition-all active:scale-95 flex items-center gap-2 shadow-sm disabled:opacity-50; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        
+        /* Drop Zone Styles */
+        .drop-zone { @apply relative border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center bg-slate-50 transition-all cursor-pointer hover:border-forest-600 hover:bg-forest-50/50; }
+        .drop-zone.dragover { @apply border-forest-600 bg-forest-50; }
+    </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-700 min-h-screen">
+
+    <header class="h-20 bg-white border-b flex items-center justify-between px-10 sticky top-0 z-20 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-forest-700 rounded-xl flex items-center justify-center text-white">
+                <i class="fa-solid fa-utensils text-sm"></i>
+            </div>
+            <h1 class="text-xl font-heading font-bold text-slate-900 tracking-tight">จัดการเมนูอาหาร <span class="text-forest-600">Admin</span></h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="ozone_admin_dashboard.html" class="px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all font-bold text-xs uppercase tracking-wider mr-4">Dashboard</a>
+            <a href="ozone_admin_menu.html" class="text-sm font-bold text-slate-400 hover:text-forest-900 uppercase tracking-widest mr-6">ห้องครัว</a>
+            
+            <input type="file" id="csv-input" accept=".csv" class="hidden" onchange="handleCSVImport(this)">
+            <button id="btn-import" onclick="document.getElementById('csv-input').click()" class="btn-secondary">
+                <i class="fa-solid fa-file-import text-sm"></i> นำเข้า CSV
+            </button>
+
+            <button onclick="openCategoryModal()" class="btn-secondary">
+                <i class="fa-solid fa-tags text-sm"></i> จัดการหมวดหมู่
+            </button>
+            <button onclick="openModal()" class="btn-primary">
+                <i class="fa-solid fa-plus text-sm"></i> เพิ่มเมนูใหม่
+            </button>
+        </div>
+    </header>
+
+    <main class="p-8 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">เมนูทั้งหมด</p>
+                <h3 id="stat-total" class="text-3xl font-black text-slate-900">0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">หมวดหมู่ทั้งหมด</p>
+                <h3 id="stat-categories" class="text-3xl font-black text-blue-600">0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">สินค้าที่หมด</p>
+                <h3 id="stat-out-of-stock" class="text-3xl font-black text-rose-600">0</h3>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] border-b">
+                        <th class="py-6 px-10">รายละเอียดเมนู</th>
+                        <th class="py-6 px-8 text-center">หมวดหมู่</th>
+                        <th class="py-6 px-8">ราคา</th>
+                        <th class="py-6 px-8 text-center">สถานะ</th>
+                        <th class="py-6 px-10 text-right">การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="menu-list" class="divide-y divide-slate-50">
+                    <tr><td colspan="5" class="p-20 text-center text-slate-300 italic text-sm">กำลังโหลดรายการเมนู...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="menu-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="relative bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl p-10 animate-fade max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <h3 id="modal-title" class="text-2xl font-heading font-bold mb-8 text-slate-900">เพิ่มเมนูใหม่</h3>
+            <form id="menu-form" onsubmit="handleSave(event)" class="space-y-6">
+                <input type="hidden" id="item-id">
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">ชื่อเมนู</label>
+                        <input type="text" id="name" required class="form-input" placeholder="เช่น เอสเพรสโซ่เย็น">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">หมวดหมู่</label>
+                        <select id="category_id" required class="form-input">
+                            <option value="">เลือกหมวดหมู่</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">ราคา (บาท)</label>
+                        <input type="number" id="price" required min="0" step="0.01" class="form-input" placeholder="80">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">สถานะพร้อมขาย</label>
+                        <select id="is_available" class="form-input">
+                            <option value="1">พร้อมขาย (Available)</option>
+                            <option value="0">สินค้าหมด (Out of Stock)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">รูปภาพเมนูอาหาร</label>
+                    <div id="drop-zone" class="drop-zone" onclick="document.getElementById('image_file').click()">
+                        <input type="file" id="image_file" accept="image/*" class="hidden" onchange="handleImageSelect(this)">
+                        
+                        <div id="drop-zone-content" class="text-center pointer-events-none">
+                            <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-300 mb-3"></i>
+                            <p class="text-sm font-bold text-slate-600">คลิก หรือ ลากไฟล์มาวาง</p>
+                            <p class="text-xs text-slate-400 mt-1 font-medium">รองรับ JPG, PNG (สูงสุด 2MB)</p>
+                        </div>
+
+                        <div id="image-preview-container" class="hidden w-full relative">
+                            <img id="image-preview" src="" class="w-full h-48 object-cover rounded-xl shadow-sm border border-slate-200">
+                            <button type="button" onclick="removeImage(event)" class="absolute -top-3 -right-3 bg-rose-500 text-white w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-rose-600 hover:scale-110 transition-all">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <input type="hidden" id="existing_image_url">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">คำอธิบาย/ส่วนประกอบ</label>
+                    <textarea id="description" class="form-input h-24 resize-none" placeholder="เช่น ใช้เมล็ดกาแฟคั่วกลาง..."></textarea>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="closeModal()" class="flex-1 py-4 text-slate-400 font-bold hover:bg-slate-50 rounded-2xl transition-all">ยกเลิก</button>
+                    <button type="submit" id="btn-save" class="flex-1 bg-forest-700 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-forest-900 transition-all active:scale-95">
+                        บันทึกข้อมูลเมนู
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="category-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeCategoryModal()"></div>
+        <div class="relative bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl p-10 animate-fade">
+            <h3 class="text-2xl font-heading font-bold mb-6 text-slate-900">จัดการหมวดหมู่</h3>
+            
+            <form id="category-form" onsubmit="handleCategorySave(event)" class="flex gap-3 mb-8">
+                <input type="hidden" id="category-id">
+                <input type="text" id="category-name" required class="form-input" placeholder="ชื่อหมวดหมู่ใหม่...">
+                <button type="submit" class="bg-slate-900 text-white px-6 rounded-xl font-bold hover:bg-slate-800 transition-all active:scale-95 shrink-0">บันทึก</button>
+                <button type="button" onclick="resetCategoryForm()" id="btn-cancel-cat" class="hidden text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </form>
+
+            <div class="max-h-64 overflow-y-auto custom-scrollbar pr-2">
+                <ul id="category-list" class="divide-y divide-slate-100">
+                    <li class="py-4 text-center text-slate-300 italic text-sm">กำลังโหลดหมวดหมู่...</li>
+                </ul>
+            </div>
+
+            <div class="mt-8 pt-6 border-t">
+                <button type="button" onclick="closeCategoryModal()" class="w-full py-4 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition-all">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'api_menu.php';
+        let allItems = [];
+        let allCategories = [];
+        let selectedImageFile = null;
+
+        async function init() {
+            await fetchCategories();
+            await fetchItems();
+            setupDropZone();
+        }
+
+        // --- Drop Zone Logic ---
+        function setupDropZone() {
+            const dropZone = document.getElementById('drop-zone');
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    const input = document.getElementById('image_file');
+                    input.files = e.dataTransfer.files;
+                    handleImageSelect(input);
+                }
+            });
+        }
+
+        function handleImageSelect(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (!file.type.startsWith('image/')) {
+                    alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น (JPG, PNG)');
+                    return;
+                }
+                selectedImageFile = file;
+                showPreview(URL.createObjectURL(file));
+            }
+        }
+
+        function showPreview(url) {
+            document.getElementById('drop-zone-content').classList.add('hidden');
+            document.getElementById('image-preview-container').classList.remove('hidden');
+            document.getElementById('image-preview').src = url;
+        }
+
+        function removeImage(e) {
+            if (e) e.stopPropagation();
+            selectedImageFile = null;
+            document.getElementById('image_file').value = '';
+            document.getElementById('existing_image_url').value = '';
+            
+            document.getElementById('drop-zone-content').classList.remove('hidden');
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('image-preview').src = '';
+        }
+
+        // --- CSV Import Logic ---
+        async function handleCSVImport(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const btn = document.getElementById('btn-import');
+            const originalHTML = btn.innerHTML;
+            
+            const formData = new FormData();
+            formData.append('csv_file', file);
+            formData.append('action', 'import_csv');
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังนำเข้า...';
+
+                const res = await fetch(API, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert(`นำเข้าสำเร็จ! เพิ่มเมนูใหม่ทั้งหมด ${result.count} รายการ`);
+                    await fetchItems(); 
+                } else {
+                    alert("เกิดข้อผิดพลาด: " + result.message);
+                }
+            } catch (err) {
+                console.error("CSV Import Error:", err);
+                alert("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                input.value = ''; 
+            }
+        }
+
+        // --- Category Logic ---
+        async function fetchCategories() {
+            try {
+                const res = await fetch(`${API}?action=list_categories&t=${Date.now()}`);
+                allCategories = await res.json();
+                renderCategoryList();
+                updateCategoryDropdown();
+                updateStats();
+            } catch (err) { console.error("Categories fetch failed", err); }
+        }
+
+        function renderCategoryList() {
+            const list = document.getElementById('category-list');
+            if (!allCategories || allCategories.length === 0) {
+                list.innerHTML = `<li class="py-4 text-center text-slate-300 italic text-sm">ไม่มีหมวดหมู่</li>`;
+                return;
+            }
+            list.innerHTML = allCategories.map(cat => `
+                <li class="py-4 flex justify-between items-center group">
+                    <span class="font-bold text-slate-700">${cat.name}</span>
+                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <button onclick="editCategory(${cat.id}, '${cat.name}')" class="text-blue-500 hover:text-blue-700 p-2"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCategory(${cat.id})" class="text-rose-400 hover:text-rose-600 p-2"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function updateCategoryDropdown() {
+            const select = document.getElementById('category_id');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">เลือกหมวดหมู่</option>' + 
+                allCategories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
+            select.value = currentValue;
+        }
+
+        async function handleCategorySave(e) {
+            e.preventDefault();
+            const id = document.getElementById('category-id').value;
+            const name = document.getElementById('category-name').value.trim();
+            const payload = { id: id || null, name: name };
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(`${API}?target=category`, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    resetCategoryForm();
+                    await fetchCategories();
+                }
+            } catch (err) { alert("ล้มเหลวในการบันทึกหมวดหมู่"); }
+        }
+
+        function editCategory(id, name) {
+            document.getElementById('category-id').value = id;
+            document.getElementById('category-name').value = name;
+            document.getElementById('btn-cancel-cat').classList.remove('hidden');
+            document.getElementById('category-name').focus();
+        }
+
+        function resetCategoryForm() {
+            document.getElementById('category-id').value = '';
+            document.getElementById('category-name').value = '';
+            document.getElementById('btn-cancel-cat').classList.add('hidden');
+        }
+
+        async function deleteCategory(id) {
+            if(!confirm("ยืนยันการลบหมวดหมู่?")) return;
+            try {
+                const res = await fetch(`${API}?target=category&id=${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if(result.status === 'success') await fetchCategories();
+            } catch (err) { alert("ลบไม่สำเร็จ"); }
+        }
+
+        function openCategoryModal() { document.getElementById('category-modal').classList.remove('hidden'); }
+        function closeCategoryModal() { document.getElementById('category-modal').classList.add('hidden'); resetCategoryForm(); }
+
+        // --- Menu Items Logic ---
+        async function fetchItems() {
+            try {
+                const res = await fetch(`${API}?action=all_items&t=${Date.now()}`);
+                const data = await res.json();
+                allItems = Array.isArray(data) ? data : [];
+                renderTable();
+                updateStats();
+            } catch (err) { 
+                console.error("Items fetch failed", err);
+                document.getElementById('menu-list').innerHTML = `<tr><td colspan="5" class="p-20 text-center text-rose-500 font-bold text-sm">ไม่สามารถดึงข้อมูลได้</td></tr>`;
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = allItems.length;
+            document.getElementById('stat-categories').innerText = allCategories.length;
+            document.getElementById('stat-out-of-stock').innerText = allItems.filter(i => i.is_available == 0).length;
+        }
+
+        function renderTable() {
+            const list = document.getElementById('menu-list');
+            if (!allItems || allItems.length === 0) {
+                list.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-slate-300 text-sm">ไม่มีข้อมูลเมนู</td></tr>`;
+                return;
+            }
+            list.innerHTML = allItems.map(item => `
+                <tr class="hover:bg-slate-50 transition-all group border-b border-slate-50 last:border-0">
+                    <td class="py-6 px-10">
+                        <div class="flex items-center gap-5">
+                            <div class="w-16 h-16 rounded-2xl overflow-hidden shadow-sm border border-slate-100 bg-slate-100 shrink-0">
+                                <img src="${item.image_url}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150?text=Ozone'">
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-900 text-lg tracking-tight">${item.name}</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 line-clamp-1 max-w-[250px]">${item.description || '-'}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-6 px-8 text-center">
+                        <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 uppercase">${item.category_name || 'ทั่วไป'}</span>
+                    </td>
+                    <td class="py-6 px-8 font-bold text-forest-700 text-lg">฿${parseFloat(item.price).toLocaleString()}</td>
+                    <td class="py-6 px-8 text-center">
+                        <span class="px-4 py-1.5 rounded-full text-[10px] font-bold uppercase border ${item.is_available == 1 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}">
+                            ${item.is_available == 1 ? 'พร้อมขาย' : 'สินค้าหมด'}
+                        </span>
+                    </td>
+                    <td class="py-6 px-10 text-right">
+                        <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <button onclick="editItem(${item.id})" class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-sm"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
+                            <button onclick="deleteItem(${item.id})" class="w-10 h-10 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-sm"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openModal() {
+            document.getElementById('modal-title').innerText = 'เพิ่มเมนูใหม่';
+            document.getElementById('item-id').value = '';
+            document.getElementById('menu-form').reset();
+            removeImage(); // รีเซ็ต Drop Zone
+            document.getElementById('menu-modal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('menu-modal').classList.add('hidden'); }
+
+        function editItem(id) {
+            const item = allItems.find(x => x.id == id);
+            if (!item) return;
+            
+            document.getElementById('modal-title').innerText = 'แก้ไขเมนู: ' + item.name;
+            document.getElementById('item-id').value = item.id;
+            document.getElementById('name').value = item.name;
+            document.getElementById('category_id').value = item.category_id;
+            document.getElementById('price').value = item.price;
+            document.getElementById('description').value = item.description;
+            document.getElementById('is_available').value = item.is_available;
+            
+            // จัดการรูปภาพเดิม
+            removeImage(); // รีเซ็ตค่าชั่วคราว
+            if (item.image_url) {
+                document.getElementById('existing_image_url').value = item.image_url;
+                showPreview(item.image_url);
+            }
+            
+            document.getElementById('menu-modal').classList.remove('hidden');
+        }
+
+        async function handleSave(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save');
+            const id = document.getElementById('item-id').value;
+            
+            // 🌟 เปลี่ยนการส่งข้อมูลเป็น FormData เพื่อรองรับไฟล์ 🌟
+            const formData = new FormData();
+            if (id) formData.append('id', id);
+            formData.append('name', document.getElementById('name').value);
+            formData.append('category_id', document.getElementById('category_id').value);
+            formData.append('price', document.getElementById('price').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('is_available', document.getElementById('is_available').value);
+            
+            // ส่ง URL เดิมไปให้เช็ค ถ้าไม่มีการแนบไฟล์ใหม่
+            const existingUrl = document.getElementById('existing_image_url').value;
+            if (existingUrl) formData.append('existing_image_url', existingUrl);
+            
+            // แนบไฟล์ภาพถ้ามีการเลือกใหม่
+            if (selectedImageFile) {
+                formData.append('image_file', selectedImageFile);
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึก...';
+
+                // ยิงไปที่เป้าหมายใหม่ (food_upload) ด้วย POST เสมอ เนื่องจากมีไฟล์แนบ
+                const res = await fetch(`${API}?target=food_upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await res.json();
+                if (result.status === 'success') {
+                    closeModal();
+                    await fetchItems();
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (err) {
+                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'บันทึกข้อมูลเมนู';
+            }
+        }
+
+        async function deleteItem(id) {
+            if(!confirm("ยืนยันการลบเมนูนี้ออกจากระบบถาวร?")) return;
+            try {
+                const res = await fetch(`${API}?target=item&id=${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if(result.status === 'success') await fetchItems();
+            } catch (err) { alert("ลบไม่สำเร็จ"); }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
